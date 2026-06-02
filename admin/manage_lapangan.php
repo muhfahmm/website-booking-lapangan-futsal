@@ -20,6 +20,7 @@ if (isset($_GET['delete'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama = $conn->real_escape_string($_POST['nama']);
     $harga = (int)$_POST['harga'];
+    $harga_weekend = (int)$_POST['harga_weekend'];
     $status = $conn->real_escape_string($_POST['status']);
     $deskripsi = $conn->real_escape_string($_POST['deskripsi']);
     $deskripsi_lengkap = $conn->real_escape_string($_POST['deskripsi_lengkap']);
@@ -32,35 +33,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipe_lantai = $conn->real_escape_string($_POST['tipe_lantai']);
     $gambar = '';
 
-    // Handle file upload
+    // Create uploads directory if it doesn't exist
+    $upload_dir = '../uploads/lapangan/';
+    $gallery_dir = '../uploads/gallery/';
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+    if (!is_dir($gallery_dir)) {
+        mkdir($gallery_dir, 0777, true);
+    }
+
+    // Handle main image upload (Gambar Lapangan)
     if (isset($_FILES['gambar']) && $_FILES['gambar']['size'] > 0) {
-        $upload_dir = '../assets/images/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
-        
         $filename = time() . '_' . basename($_FILES['gambar']['name']);
         $filepath = $upload_dir . $filename;
         
         if (move_uploaded_file($_FILES['gambar']['tmp_name'], $filepath)) {
-            $gambar = 'assets/images/' . $filename;
+            $gambar = 'uploads/lapangan/' . $filename;
         }
     }
+
+    $lapangan_id = null;
 
     if (isset($_POST['id']) && !empty($_POST['id'])) {
         // Update
         $id = (int)$_POST['id'];
+        $lapangan_id = $id;
         if ($gambar) {
-            $sql = "UPDATE tb_lapangan SET nama='$nama', harga=$harga, status='$status', deskripsi='$deskripsi', deskripsi_lengkap='$deskripsi_lengkap', fasilitas='$fasilitas', rating=$rating, lokasi='$lokasi', ukuran='$ukuran', pencahayaan='$pencahayaan', parkir='$parkir', tipe_lantai='$tipe_lantai', gambar='$gambar' WHERE id=$id";
+            $sql = "UPDATE tb_lapangan SET nama='$nama', harga=$harga, harga_weekend=$harga_weekend, status='$status', deskripsi='$deskripsi', deskripsi_lengkap='$deskripsi_lengkap', fasilitas='$fasilitas', rating=$rating, lokasi='$lokasi', ukuran='$ukuran', pencahayaan='$pencahayaan', parkir='$parkir', tipe_lantai='$tipe_lantai', gambar='$gambar' WHERE id=$id";
         } else {
-            $sql = "UPDATE tb_lapangan SET nama='$nama', harga=$harga, status='$status', deskripsi='$deskripsi', deskripsi_lengkap='$deskripsi_lengkap', fasilitas='$fasilitas', rating=$rating, lokasi='$lokasi', ukuran='$ukuran', pencahayaan='$pencahayaan', parkir='$parkir', tipe_lantai='$tipe_lantai' WHERE id=$id";
+            $sql = "UPDATE tb_lapangan SET nama='$nama', harga=$harga, harga_weekend=$harga_weekend, status='$status', deskripsi='$deskripsi', deskripsi_lengkap='$deskripsi_lengkap', fasilitas='$fasilitas', rating=$rating, lokasi='$lokasi', ukuran='$ukuran', pencahayaan='$pencahayaan', parkir='$parkir', tipe_lantai='$tipe_lantai' WHERE id=$id";
         }
         $conn->query($sql);
     } else {
         // Add new
-        $sql = "INSERT INTO tb_lapangan (nama, harga, status, deskripsi, deskripsi_lengkap, fasilitas, rating, lokasi, ukuran, pencahayaan, parkir, tipe_lantai, gambar) VALUES ('$nama', $harga, '$status', '$deskripsi', '$deskripsi_lengkap', '$fasilitas', $rating, '$lokasi', '$ukuran', '$pencahayaan', '$parkir', '$tipe_lantai', '$gambar')";
+        $sql = "INSERT INTO tb_lapangan (nama, harga, harga_weekend, status, deskripsi, deskripsi_lengkap, fasilitas, rating, lokasi, ukuran, pencahayaan, parkir, tipe_lantai, gambar) VALUES ('$nama', $harga, $harga_weekend, '$status', '$deskripsi', '$deskripsi_lengkap', '$fasilitas', $rating, '$lokasi', '$ukuran', '$pencahayaan', '$parkir', '$tipe_lantai', '$gambar')";
         $conn->query($sql);
+        $lapangan_id = $conn->insert_id;
     }
+
+    // Handle multiple gallery images upload
+    if (isset($_FILES['gallery_images']) && count($_FILES['gallery_images']['name']) > 0) {
+        $max_order = 0;
+        $result = $conn->query("SELECT MAX(urutan) as max_urutan FROM tb_lapangan_gallery WHERE lapangan_id = $lapangan_id");
+        if ($result) {
+            $row = $result->fetch_assoc();
+            $max_order = $row['max_urutan'] ? (int)$row['max_urutan'] : 0;
+        }
+
+        for ($i = 0; $i < count($_FILES['gallery_images']['name']); $i++) {
+            if ($_FILES['gallery_images']['size'][$i] > 0) {
+                $filename = time() . '_gallery_' . $i . '_' . basename($_FILES['gallery_images']['name'][$i]);
+                $filepath = $gallery_dir . $filename;
+                
+                if (move_uploaded_file($_FILES['gallery_images']['tmp_name'][$i], $filepath)) {
+                    $foto = 'uploads/gallery/' . $filename;
+                    $urutan = $max_order + $i + 1;
+                    $conn->query("INSERT INTO tb_lapangan_gallery (lapangan_id, foto, urutan) VALUES ($lapangan_id, '$foto', $urutan)");
+                }
+            }
+        }
+    }
+
     header('Location: manage_lapangan.php');
     exit;
 }
@@ -155,10 +189,13 @@ if (isset($_GET['edit'])) {
 
                                 <!-- Action Buttons -->
                                 <div class="flex gap-2">
-                                    <button onclick="editModal(<?php echo $lapangan['id']; ?>)" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700">
+                                    <button onclick="editModal(<?php echo $lapangan['id']; ?>)" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700 text-sm">
                                         <i class="fas fa-edit"></i> Edit
                                     </button>
-                                    <button onclick="if(confirm('Hapus lapangan ini?')) window.location='manage_lapangan.php?delete=<?php echo $lapangan['id']; ?>'" class="flex-1 bg-red-600 text-white px-4 py-2 rounded font-semibold hover:bg-red-700">
+                                    <a href="manage_gallery.php?lapangan_id=<?php echo $lapangan['id']; ?>" class="flex-1 bg-purple-600 text-white px-4 py-2 rounded font-semibold hover:bg-purple-700 text-center text-sm">
+                                        <i class="fas fa-images"></i> Gallery
+                                    </a>
+                                    <button onclick="if(confirm('Hapus lapangan ini?')) window.location='manage_lapangan.php?delete=<?php echo $lapangan['id']; ?>'" class="flex-1 bg-red-600 text-white px-4 py-2 rounded font-semibold hover:bg-red-700 text-sm">
                                         <i class="fas fa-trash"></i> Hapus
                                     </button>
                                 </div>
@@ -185,8 +222,13 @@ if (isset($_GET['edit'])) {
                     </div>
 
                     <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Harga per Jam (Rp)</label>
+                        <label class="block text-gray-700 font-semibold mb-2">Harga per Jam (Rp) - Weekday</label>
                         <input type="number" id="harga" name="harga" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Harga per Jam (Rp) - Weekend</label>
+                        <input type="number" id="harga_weekend" name="harga_weekend" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">
                     </div>
 
                     <div>
@@ -199,8 +241,23 @@ if (isset($_GET['edit'])) {
 
                     <div>
                         <label class="block text-gray-700 font-semibold mb-2">Gambar Lapangan</label>
-                        <input type="file" id="gambar" name="gambar" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">
-                        <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG (Max 2MB)</p>
+                        <div class="relative">
+                            <input type="file" id="gambar" name="gambar" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                            <i class="fas fa-image absolute right-3 top-3 text-gray-400"></i>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1"><i class="fas fa-info-circle"></i> Format: JPG, PNG (Max 2MB) - Gambar ini akan ditampilkan di halaman utama</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-700 font-semibold mb-2">Multiple Gambar Lapangan (Gallery)</label>
+                        <div class="relative">
+                            <input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" multiple class="w-full px-4 py-2 border border-2 border-dashed border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 hover:border-emerald-600 cursor-pointer">
+                            <i class="fas fa-images absolute right-3 top-3 text-emerald-400"></i>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-1"><i class="fas fa-info-circle"></i> Format: JPG, PNG (Max 2MB per file) - Pilih beberapa gambar sekaligus untuk gallery</p>
+                        <div id="imagePreview" class="mt-3 grid grid-cols-4 gap-2">
+                            <p class="col-span-4 text-gray-400 text-sm text-center py-4"><i class="fas fa-images"></i> Preview gambar akan ditampilkan di sini</p>
+                        </div>
                     </div>
 
                     <div>
@@ -269,6 +326,7 @@ if (isset($_GET['edit'])) {
             document.getElementById('lapanganForm').reset();
             document.getElementById('id').value = '';
             document.getElementById('modalTitle').innerText = 'Tambah Lapangan Baru';
+            document.getElementById('imagePreview').innerHTML = '';
             document.getElementById('formModal').classList.remove('hidden');
         }
 
@@ -283,6 +341,7 @@ if (isset($_GET['edit'])) {
                     document.getElementById('id').value = data.id;
                     document.getElementById('nama').value = data.nama;
                     document.getElementById('harga').value = data.harga;
+                    document.getElementById('harga_weekend').value = data.harga_weekend || data.harga;
                     document.getElementById('status').value = data.status;
                     document.getElementById('deskripsi').value = data.deskripsi || '';
                     document.getElementById('deskripsi_lengkap').value = data.deskripsi_lengkap || '';
@@ -294,12 +353,52 @@ if (isset($_GET['edit'])) {
                     document.getElementById('parkir').value = data.parkir || 'Tersedia';
                     document.getElementById('tipe_lantai').value = data.tipe_lantai || 'Rumput Sintetis';
                     document.getElementById('modalTitle').innerText = 'Edit Lapangan';
+                    document.getElementById('imagePreview').innerHTML = '';
                     document.getElementById('formModal').classList.remove('hidden');
                 })
                 .catch(err => {
                     alert('Error loading lapangan data: ' + err);
                 });
         }
+
+        // Preview multiple images
+        document.addEventListener('DOMContentLoaded', function() {
+            const galleryInput = document.getElementById('gallery_images');
+            if (galleryInput) {
+                galleryInput.addEventListener('change', function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.innerHTML = '';
+                    
+                    const files = Array.from(this.files);
+                    if (files.length === 0) {
+                        preview.innerHTML = '<p class="col-span-4 text-gray-400 text-sm text-center py-4"><i class="fas fa-images"></i> Preview gambar akan ditampilkan di sini</p>';
+                        return;
+                    }
+
+                    files.forEach((file, index) => {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            const container = document.createElement('div');
+                            container.className = 'relative group';
+                            
+                            const img = document.createElement('img');
+                            img.src = event.target.result;
+                            img.className = 'w-full h-24 object-cover rounded border-2 border-emerald-600 group-hover:opacity-75 transition-opacity';
+                            img.title = `${index + 1}. ${file.name}`;
+                            
+                            const label = document.createElement('div');
+                            label.className = 'absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 text-center rounded-b';
+                            label.textContent = `${index + 1}/${files.length}`;
+                            
+                            container.appendChild(img);
+                            container.appendChild(label);
+                            preview.appendChild(container);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                });
+            }
+        });
 
         // Close modal on outside click
         document.getElementById('formModal').addEventListener('click', function(e) {

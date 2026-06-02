@@ -364,21 +364,78 @@ All required documentation has been created:
 
 ---
 
+## 🎯 Version 2.1 Updates - Dynamic Pricing & Gallery ✅
+
+### Database Schema ✅
+- [x] Added `harga_weekend` column to tb_lapangan
+- [x] Created `tb_lapangan_gallery` table with columns: id, lapangan_id, foto, urutan, dibuat_pada
+- [x] Added foreign key constraint and index
+- [x] Updated sample data with weekend pricing (Lapangan A: 100k/150k, B: 80k/120k, C: 75k/110k)
+
+### Admin Panel ✅
+- [x] Updated manage_lapangan.php with harga_weekend field
+- [x] Created manage_gallery.php (280+ lines)
+  - [x] Multiple photo upload per lapangan
+  - [x] Gallery grid display
+  - [x] Delete photo functionality
+  - [x] Photo ordering system
+  - [x] Session validation
+  - [x] Error handling
+
+### Frontend - Detail Page ✅
+- [x] Updated detail-lapangan.php (complete rewrite)
+  - [x] Gallery carousel navigation
+    - [x] Left/right arrow buttons
+    - [x] Thumbnail strip display
+    - [x] Image counter (e.g., "1/5")
+    - [x] Smooth transitions
+    - [x] Click-to-select thumbnails
+  - [x] Dynamic pricing display
+    - [x] Date picker input
+    - [x] Weekday/weekend detection
+    - [x] Dynamic price calculation
+    - [x] Price comparison box (weekday vs weekend)
+    - [x] Day type indicator with icons
+    - [x] Indonesian locale formatting
+  - [x] Updated WhatsApp booking message with date
+  - [x] Responsive design maintained
+
+### JavaScript Functions ✅
+- [x] Gallery navigation: selectImage(), nextImage(), prevImage(), updateMainImage()
+- [x] Dynamic pricing: updatePricing()
+- [x] Date formatting using Intl.DateTimeFormat
+- [x] Day of week detection (0=Sunday, 6=Saturday)
+- [x] Smooth image transitions
+- [x] Image counter updates
+
+### Documentation ✅
+- [x] Created GALLERY_PRICING_IMPLEMENTATION.md (comprehensive guide)
+  - [x] Features overview
+  - [x] Database schema details
+  - [x] User experience flow
+  - [x] Testing checklist
+  - [x] Browser compatibility
+  - [x] Performance notes
+  - [x] Future enhancement suggestions
+
 ## 🚀 Next Steps (After Deployment)
 
 ### Immediate (Required):
 1. Database migration & setup
 2. Admin credential creation
-3. Sample data insertion
+3. Sample data insertion (with harga_weekend & gallery)
 4. Website testing
 5. Admin panel testing
+6. Gallery upload testing
+7. Dynamic pricing testing
 
 ### Short-term (Recommended):
 1. User testing & feedback
-2. Performance optimization
-3. Security hardening
-4. Browser compatibility testing
-5. Mobile device testing
+2. Gallery image optimization
+3. Performance optimization
+4. Security hardening
+5. Browser compatibility testing
+6. Mobile device testing
 
 ### Medium-term (Future Enhancements):
 1. Complete booking system

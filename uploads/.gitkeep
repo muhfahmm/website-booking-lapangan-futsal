@@ -1,0 +1,4 @@
+# This file ensures the uploads folder is tracked by git
+# Image files are stored in subdirectories:
+# - uploads/lapangan/ : Main lapangan images
+# - uploads/gallery/  : Multiple gallery images per lapangan

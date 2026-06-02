@@ -20,6 +20,14 @@ if ($result->num_rows === 0) {
 
 $lapangan = $result->fetch_assoc();
 
+// Get gallery images
+$query_gallery = "SELECT * FROM tb_lapangan_gallery WHERE lapangan_id = $lapangan_id ORDER BY urutan ASC";
+$result_gallery = $conn->query($query_gallery);
+$gallery = [];
+while ($row = $result_gallery->fetch_assoc()) {
+    $gallery[] = $row;
+}
+
 // Get related lapangan (other lapangan)
 $query_related = "SELECT * FROM tb_lapangan WHERE id != $lapangan_id ORDER BY RAND() LIMIT 3";
 $result_related = $conn->query($query_related);
@@ -169,15 +177,54 @@ while ($row = $result_related->fetch_assoc()) {
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             <!-- Left - Image & Details -->
             <div class="md:col-span-2">
-                <!-- Main Image -->
+                <!-- Main Image with Gallery Carousel -->
                 <div class="mb-6">
-                    <?php if ($lapangan['gambar']): ?>
-                        <img src="<?php echo htmlspecialchars($lapangan['gambar']); ?>" 
+                    <!-- Main Image Container -->
+                    <div class="relative bg-gray-200 rounded-lg overflow-hidden mb-4" style="aspect-ratio: 16/9;">
+                        <?php 
+                            $main_image = $lapangan['gambar'];
+                            if (!$main_image && count($gallery) > 0) {
+                                $main_image = $gallery[0]['foto'];
+                            }
+                        ?>
+                        <img id="mainImage" src="<?php echo htmlspecialchars($main_image ?? 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23e5e7eb%22 width=%22100%22 height=%22100%22/%3E%3C/svg%3E'); ?>" 
                              alt="<?php echo htmlspecialchars($lapangan['nama']); ?>" 
-                             class="gallery-image">
-                    <?php else: ?>
-                        <div class="gallery-image bg-gray-300 flex items-center justify-center">
-                            <i class="fas fa-image text-gray-400 text-6xl"></i>
+                             class="w-full h-full object-cover" id="galleryImage">
+                        
+                        <!-- Gallery Controls (only if there are multiple images) -->
+                        <?php if (count($gallery) > 1): ?>
+                            <button onclick="prevImage()" class="absolute left-3 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button onclick="nextImage()" class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <div class="absolute bottom-3 right-3 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
+                                <span id="imageCounter">1</span> / <?php echo count($gallery) + 1; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Gallery Thumbnails -->
+                    <?php if (count($gallery) > 0 || $lapangan['gambar']): ?>
+                        <div class="flex gap-2 overflow-x-auto pb-2">
+                            <!-- Main image thumbnail -->
+                            <?php if ($lapangan['gambar']): ?>
+                                <button onclick="selectImage(-1)" class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-emerald-600 hover:border-emerald-700 transition-all">
+                                    <img src="<?php echo htmlspecialchars($lapangan['gambar']); ?>" 
+                                         alt="Main" 
+                                         class="w-full h-full object-cover">
+                                </button>
+                            <?php endif; ?>
+
+                            <!-- Gallery images thumbnails -->
+                            <?php foreach ($gallery as $index => $item): ?>
+                                <button onclick="selectImage(<?php echo $index; ?>)" class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-300 hover:border-emerald-600 transition-all">
+                                    <img src="<?php echo htmlspecialchars($item['foto']); ?>" 
+                                         alt="Gallery <?php echo $index + 1; ?>" 
+                                         class="w-full h-full object-cover">
+                                </button>
+                            <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -274,12 +321,41 @@ while ($row = $result_related->fetch_assoc()) {
             <div>
                 <!-- Harga Card -->
                 <div class="detail-section sticky top-24">
+                    <!-- Date Selection for Dynamic Pricing -->
                     <div class="mb-6">
+                        <label class="block text-gray-600 text-sm font-semibold mb-2">Pilih Tanggal (untuk melihat harga):</label>
+                        <input type="date" id="selectedDate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600" onchange="updatePricing()">
+                        <p id="dayType" class="text-sm text-gray-500 mt-2">Pilih tanggal terlebih dahulu</p>
+                    </div>
+
+                    <hr class="border-gray-200 mb-6">
+
+                    <!-- Pricing Display -->
+                    <div>
                         <p class="text-gray-600 text-sm mb-2">Harga per Jam</p>
-                        <p class="text-5xl font-bold text-emerald-600 mb-1">
+                        <p id="currentPrice" class="text-5xl font-bold text-emerald-600 mb-1">
                             Rp <?php echo number_format($lapangan['harga'], 0, ',', '.'); ?>
                         </p>
-                        <p class="text-gray-500 text-sm">Harga berlaku untuk 1 jam</p>
+                        <p class="text-gray-500 text-sm mb-4">Harga berlaku untuk 1 jam</p>
+
+                        <!-- Price Comparison -->
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                            <p class="text-xs text-gray-600 font-semibold mb-3">PERBANDINGAN HARGA</p>
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-700">
+                                        <i class="fas fa-sun text-yellow-500 mr-2"></i>Weekday (Sen-Jum):
+                                    </span>
+                                    <span class="font-bold text-slate-900">Rp <?php echo number_format($lapangan['harga'], 0, ',', '.'); ?></span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-700">
+                                        <i class="fas fa-moon text-blue-500 mr-2"></i>Weekend (Sab-Min):
+                                    </span>
+                                    <span class="font-bold text-slate-900">Rp <?php echo number_format($lapangan['harga_weekend'], 0, ',', '.'); ?></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <hr class="border-gray-200 my-6">
@@ -404,6 +480,78 @@ while ($row = $result_related->fetch_assoc()) {
     </footer>
 
     <script>
+        // Gallery images data
+        const galleryImages = [
+            <?php if ($lapangan['gambar']): ?>
+                { src: '<?php echo htmlspecialchars($lapangan['gambar']); ?>' },
+            <?php endif; ?>
+            <?php foreach ($gallery as $item): ?>
+                { src: '<?php echo htmlspecialchars($item['foto']); ?>' },
+            <?php endforeach; ?>
+        ];
+
+        let currentImageIndex = 0;
+
+        function selectImage(index) {
+            currentImageIndex = index + 1; // +1 because main image is at index -1
+            if (index === -1) {
+                currentImageIndex = 0;
+            }
+            updateMainImage();
+        }
+
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
+            updateMainImage();
+        }
+
+        function prevImage() {
+            currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
+            updateMainImage();
+        }
+
+        function updateMainImage() {
+            if (galleryImages.length > 0) {
+                document.getElementById('mainImage').src = galleryImages[currentImageIndex].src;
+                document.getElementById('imageCounter').textContent = currentImageIndex + 1;
+            }
+        }
+
+        // Dynamic Pricing Logic
+        function updatePricing() {
+            const dateInput = document.getElementById('selectedDate').value;
+            if (!dateInput) {
+                document.getElementById('dayType').textContent = 'Pilih tanggal terlebih dahulu';
+                document.getElementById('currentPrice').innerHTML = 'Rp <?php echo number_format($lapangan['harga'], 0, ',', '.'); ?>';
+                return;
+            }
+
+            const date = new Date(dateInput);
+            const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+            
+            const weekdayPrice = <?php echo $lapangan['harga']; ?>;
+            const weekendPrice = <?php echo $lapangan['harga_weekend']; ?>;
+            
+            // Determine if it's weekend (Saturday = 6, Sunday = 0)
+            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+            const selectedPrice = isWeekend ? weekendPrice : weekdayPrice;
+            
+            // Format date for display
+            const dateFormatter = new Intl.DateTimeFormat('id-ID', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            const formattedDate = dateFormatter.format(date);
+            
+            const dayType = isWeekend ? '<i class="fas fa-calendar-days text-blue-500 mr-2"></i>Weekend' : '<i class="fas fa-calendar-days text-yellow-500 mr-2"></i>Weekday';
+            
+            document.getElementById('dayType').innerHTML = `${dayType} - ${formattedDate}`;
+            document.getElementById('currentPrice').innerHTML = `Rp ${selectedPrice.toLocaleString('id-ID')}`;
+        }
+
+        // Navbar scroll effect
         const navbar = document.querySelector('nav');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 100) {
@@ -416,7 +564,22 @@ while ($row = $result_related->fetch_assoc()) {
         function whatsappBooking() {
             const lapanganName = '<?php echo htmlspecialchars($lapangan['nama']); ?>';
             const harga = '<?php echo htmlspecialchars($lapangan['harga']); ?>';
-            const message = `Halo Admin, saya tertarik booking ${lapanganName} (Rp ${harga}/jam). Mohon informasi ketersediaan untuk [Tanggal]. Terima kasih.`;
+            const dateInput = document.getElementById('selectedDate').value;
+            
+            let message;
+            if (dateInput) {
+                const date = new Date(dateInput);
+                const dateFormatter = new Intl.DateTimeFormat('id-ID', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                const formattedDate = dateFormatter.format(date);
+                message = `Halo Admin, saya tertarik booking ${lapanganName} untuk tanggal ${formattedDate}. Mohon informasi ketersediaan jam bermainnya. Terima kasih.`;
+            } else {
+                message = `Halo Admin, saya tertarik booking ${lapanganName}. Mohon informasi ketersediaan dan harganya. Terima kasih.`;
+            }
+            
             const encodedMessage = encodeURIComponent(message);
             window.open(`https://wa.me/6288983514206?text=${encodedMessage}`, '_blank');
         }

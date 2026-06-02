@@ -1,13 +1,18 @@
-CREATE DATABASE db_booking_lapangan_futsal;
+-- Database v3 dengan Pricing & Gallery Support
+-- Drop existing database jika perlu: DROP DATABASE db_booking_lapangan_futsal;
+
+CREATE DATABASE IF NOT EXISTS db_booking_lapangan_futsal;
 USE db_booking_lapangan_futsal;
 
-CREATE TABLE tb_admin (
+-- Admin Table
+CREATE TABLE IF NOT EXISTS tb_admin (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE tb_lapangan (
+-- Lapangan Table (dengan harga weekday & weekend + kolom baru)
+CREATE TABLE IF NOT EXISTS tb_lapangan (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nama VARCHAR(100) NOT NULL,
     harga INT DEFAULT 0,
@@ -25,7 +30,8 @@ CREATE TABLE tb_lapangan (
     tipe_lantai VARCHAR(100) DEFAULT 'Rumput Sintetis'
 );
 
-CREATE TABLE tb_lapangan_gallery (
+-- Lapangan Gallery Table (untuk multiple photos)
+CREATE TABLE IF NOT EXISTS tb_lapangan_gallery (
     id INT PRIMARY KEY AUTO_INCREMENT,
     lapangan_id INT NOT NULL,
     foto VARCHAR(255) NOT NULL,
@@ -35,7 +41,8 @@ CREATE TABLE tb_lapangan_gallery (
     INDEX idx_lapangan_id (lapangan_id)
 );
 
-CREATE TABLE tb_booking (
+-- Booking Table
+CREATE TABLE IF NOT EXISTS tb_booking (
     id INT PRIMARY KEY AUTO_INCREMENT,
     lapangan_id INT NOT NULL,
     nama_pemesan VARCHAR(100) NOT NULL,
@@ -43,10 +50,12 @@ CREATE TABLE tb_booking (
     jam_mulai TIME NOT NULL,
     jam_selesai TIME NOT NULL,
     status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
-    FOREIGN KEY (lapangan_id) REFERENCES tb_lapangan(id) ON DELETE CASCADE
+    FOREIGN KEY (lapangan_id) REFERENCES tb_lapangan(id) ON DELETE CASCADE,
+    INDEX idx_lapangan_booking (lapangan_id)
 );
 
-CREATE TABLE tb_konten (
+-- Konten Table
+CREATE TABLE IF NOT EXISTS tb_konten (
     id INT PRIMARY KEY AUTO_INCREMENT,
     judul VARCHAR(200) NOT NULL,
     isi TEXT NOT NULL,
@@ -54,14 +63,14 @@ CREATE TABLE tb_konten (
     dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Sample Data
-INSERT INTO tb_lapangan (nama, harga, harga_weekend, status, gambar, deskripsi, deskripsi_lengkap, fasilitas, rating, lokasi, ukuran, pencahayaan, parkir, tipe_lantai) VALUES 
+-- Sample Data: Lapangan dengan harga weekday & weekend
+INSERT IGNORE INTO tb_lapangan (id, nama, harga, harga_weekend, status, deskripsi, deskripsi_lengkap, fasilitas, rating, lokasi, ukuran, pencahayaan, parkir, tipe_lantai) VALUES 
 (
+    1,
     'Lapangan A', 
-    100000,
+    100000, 
     150000,
     'tersedia', 
-    NULL,
     'Lapangan indoor dengan pencahayaan standar dan fasilitas lengkap', 
     'Lapangan A adalah lapangan futsal indoor premium yang berlokasi di Jakarta Barat. Dengan ukuran standar internasional dan dilengkapi pencahayaan LED modern, lapangan ini menawarkan kenyamanan bermain yang optimal. Cocok untuk pertandingan resmi maupun latihan rutin.',
     'AC Central, Toilet & Kamar Mandi, Ruang Tunggu Nyaman, Penyewaan Perlengkapan, Kantin & Minuman, Tempat Parkir Luas, Keamanan 24 Jam',
@@ -73,11 +82,11 @@ INSERT INTO tb_lapangan (nama, harga, harga_weekend, status, gambar, deskripsi, 
     'Rumput Sintetis Premium'
 ),
 (
+    2,
     'Lapangan B', 
-    80000,
+    80000, 
     120000,
     'tersedia', 
-    NULL,
     'Lapangan outdoor berkualitas internasional dengan rumput sintetis', 
     'Lapangan B adalah lapangan futsal outdoor terbesar dan tercanggih dengan standar internasional. Dilengkapi rumput sintetis berkualitas tinggi dan sistem drainase modern, lapangan ini siap untuk berbagai jenis pertandingan. Lokasi strategis di Jakarta Timur memudahkan akses dari berbagai area.',
     'Sistem Pencahayaan Profesional, Tribun Penonton, Kantor Pengelola, Area Istirahat Ber-AC, Toilet Bersih, Fasilitas Olahraga Lengkap, Parkir Bertingkat',
@@ -89,11 +98,11 @@ INSERT INTO tb_lapangan (nama, harga, harga_weekend, status, gambar, deskripsi, 
     'Rumput Sintetis Internasional'
 ),
 (
+    3,
     'Lapangan C', 
-    75000,
+    75000, 
     110000,
     'tersedia', 
-    NULL,
     'Lapangan indoor dengan AC dan fasilitas premium', 
     'Lapangan C menawarkan pengalaman bermain futsal yang nyaman dengan ber-AC penuh. Lapangan ini ideal untuk casual games maupun turnamen skala kecil. Harga yang kompetitif menjadikan lapangan ini pilihan utama untuk grup yang mencari value terbaik.',
     'AC Pendingin Optimal, Kamar Ganti Bersih, Penyewaan Bola & Sepatu, Snack Bar, WiFi Gratis, Parkir Aman, Staff Profesional',
@@ -104,4 +113,3 @@ INSERT INTO tb_lapangan (nama, harga, harga_weekend, status, gambar, deskripsi, 
     'Tersedia (80+ spot)',
     'Rumput Sintetis Standar'
 );
-
