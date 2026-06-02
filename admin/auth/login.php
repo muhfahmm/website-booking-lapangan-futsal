@@ -28,7 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_result($id, $hash);
             $stmt->fetch();
             if (password_verify($password, $hash)) {
-                // Login successful
+                // Login successful - prevent session fixation
+                session_regenerate_id(true);
                 $_SESSION['admin_logged_in'] = true;
                 $_SESSION['admin_id'] = $id;
                 header('Location: ../dashboard.php');
