@@ -20,18 +20,28 @@ $current_page = basename($_SERVER['PHP_SELF']);
         visibility: visible;
     }
 
-    /* Mobile topbar spacing */
+    /* Mobile sidebar - narrower on small screens */
     @media (max-width: 768px) {
+        #admin-sidebar {
+            width: 70vw;
+            max-width: 280px;
+        }
+
         main {
             margin-left: 0 !important;
-            padding-top: calc(2rem + 3.5rem) !important; /* topbar height + extra space */
+            padding-top: 3.5rem !important; /* topbar height */
         }
     }
 
+    /* Desktop sidebar - full width */
     @media (min-width: 769px) {
+        #admin-sidebar {
+            width: 16rem;
+        }
+
         main {
             margin-left: 16rem !important;
-            padding-top: 2rem !important;
+            padding-top: 0 !important;
         }
     }
 
@@ -52,15 +62,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </div>
 
 <!-- Desktop Sidebar -->
-<aside id="admin-sidebar" class="fixed inset-y-0 left-0 w-64 bg-slate-900 text-white flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40">
+<aside id="admin-sidebar" class="fixed inset-y-0 left-0 bg-slate-900 text-white flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-40">
     <!-- Header -->
-    <div class="bg-gradient-to-r from-slate-900 to-slate-800 p-6 border-b border-slate-700">
+    <div class="bg-gradient-to-r from-slate-900 to-slate-800 px-4 py-2 border-b border-slate-700">
         <div class="flex items-center gap-2">
             <i class="fas fa-futbol text-emerald-400 text-2xl"></i>
-            <div>
-                <div class="font-bold text-white text-lg">FutsalBook</div>
-                <div class="text-emerald-400 text-xs">Admin Panel</div>
-            </div>
+            <div class="font-bold text-white text-lg">FutsalBook</div>
         </div>
     </div>
 
@@ -105,12 +112,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
     const adminSidebar = document.getElementById('admin-sidebar');
     const adminSidebarOverlay = document.getElementById('admin-sidebar-overlay');
 
-    // Open sidebar
+    // Toggle sidebar with hamburger button (click to open/close)
     if (adminMenuToggle) {
-        adminMenuToggle.addEventListener('click', function() {
-            adminSidebar.classList.add('open');
-            adminSidebarOverlay.classList.add('open');
-            document.body.classList.add('menu-open');
+        adminMenuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (adminSidebar.classList.contains('open')) {
+                closeSidebar();
+            } else {
+                adminSidebar.classList.add('open');
+                adminSidebarOverlay.classList.add('open');
+                document.body.classList.add('menu-open');
+            }
         });
     }
 
@@ -126,10 +138,20 @@ $current_page = basename($_SERVER['PHP_SELF']);
         adminSidebarOverlay.addEventListener('click', closeSidebar);
     }
 
+    // Close when clicking menu items
+    document.querySelectorAll('nav a').forEach(link => {
+        link.addEventListener('click', closeSidebar);
+    });
+
     // Close on ESC press
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape' && adminSidebar.classList.contains('open')) {
             closeSidebar();
         }
+    });
+
+    // Prevent sidebar from closing when clicking inside it
+    adminSidebar.addEventListener('click', function(e) {
+        e.stopPropagation();
     });
 </script>
