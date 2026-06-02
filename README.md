@@ -20,8 +20,6 @@ Admin dapat:
 - Manage booking requests
 - Manage konten
 
----
-
 ## ✨ Features
 
 ### Frontend (User)
