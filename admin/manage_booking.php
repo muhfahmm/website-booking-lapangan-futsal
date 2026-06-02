@@ -15,11 +15,18 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <title>Kelola Booking</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen">
-    <div class="max-w-2xl w-full p-8 bg-white rounded-lg shadow-md">
-        <h1 class="text-3xl font-bold text-emerald-600 mb-6">Kelola Booking</h1>
-        <p class="text-gray-700">Halaman ini akan menampilkan daftar booking dan aksi CRUD. Saat ini masih placeholder.</p>
-        <a href="dashboard.php" class="inline-block mt-4 text-emerald-600 hover:underline">← Kembali ke Dashboard</a>
-    </div>
+<body class="bg-gray-50 flex">
+    <?php include 'sidebar.php'; ?>
+
+    <main class="ml-64 flex-1 p-8">
+        <header class="mb-6">
+            <h1 class="text-3xl font-bold text-emerald-600">Kelola Booking</h1>
+            <div class="mt-2 h-1 w-24 bg-emerald-600"></div>
+        </header>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <p class="text-gray-700">Halaman ini akan menampilkan daftar booking dan aksi CRUD. Saat ini masih placeholder.</p>
+        </div>
+    </main>
 </body>
 </html>
