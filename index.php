@@ -127,6 +127,25 @@ if ($result_konten->num_rows > 0) {
                 font-size: 28px;
             }
         }
+
+        /* Mobile Menu Sidebar Styling */
+        #mobile-menu {
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+        }
+
+        #mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        #mobile-menu-overlay.open {
+            opacity: 0.5;
+            visibility: visible;
+        }
+
+        /* Smooth scroll for anchor links */
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -139,7 +158,7 @@ if ($result_konten->num_rows > 0) {
                 <span class="text-2xl font-bold text-slate-900">FutsalBook</span>
             </div>
             
-            <!-- Navigation Links -->
+            <!-- Navigation Links (Desktop) -->
             <div class="hidden md:flex gap-8 items-center">
                 <a href="#home" class="text-slate-900 font-semibold hover:text-emerald-600 transition-all">Home</a>
                 <a href="#lapangan" class="text-slate-900 font-semibold hover:text-emerald-600 transition-all">Lapangan</a>
@@ -152,11 +171,48 @@ if ($result_konten->num_rows > 0) {
                 <i class="fas fa-lock mr-2"></i> Admin
             </a>
             
-            <!-- Mobile Menu Icon -->
-            <div class="md:hidden">
-                <i class="fas fa-bars text-2xl text-slate-900 cursor-pointer"></i>
+            <!-- Mobile Menu Toggle Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-2xl text-slate-900 cursor-pointer focus:outline-none">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Sidebar -->
+        <div id="mobile-menu" class="fixed left-0 top-0 h-full w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out z-40 md:hidden">
+            <!-- Close Button -->
+            <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                <span class="text-xl font-bold text-slate-900">Menu</span>
+                <button id="close-menu-btn" class="text-2xl text-slate-900 focus:outline-none">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Navigation Links -->
+            <div class="flex flex-col gap-0 p-0">
+                <a href="#home" class="px-6 py-4 text-slate-900 font-semibold hover:bg-emerald-50 hover:text-emerald-600 border-b border-gray-100 transition-all" onclick="closeMobileMenu()">
+                    <i class="fas fa-home mr-3 text-emerald-600"></i>Home
+                </a>
+                <a href="#lapangan" class="px-6 py-4 text-slate-900 font-semibold hover:bg-emerald-50 hover:text-emerald-600 border-b border-gray-100 transition-all" onclick="closeMobileMenu()">
+                    <i class="fas fa-futbol mr-3 text-emerald-600"></i>Lapangan
+                </a>
+                <a href="#booking" class="px-6 py-4 text-slate-900 font-semibold hover:bg-emerald-50 hover:text-emerald-600 border-b border-gray-100 transition-all" onclick="closeMobileMenu()">
+                    <i class="fas fa-calendar-check mr-3 text-emerald-600"></i>Booking
+                </a>
+                <a href="#kontak" class="px-6 py-4 text-slate-900 font-semibold hover:bg-emerald-50 hover:text-emerald-600 border-b border-gray-100 transition-all" onclick="closeMobileMenu()">
+                    <i class="fas fa-phone mr-3 text-emerald-600"></i>Kontak
+                </a>
+            </div>
+
+            <!-- Mobile Admin Link -->
+            <div class="mt-6 px-6 py-4 border-t border-gray-200">
+                <a href="admin/auth/login.php" class="block w-full btn-primary text-center">
+                    <i class="fas fa-lock mr-2"></i> Admin Login
+                </a>
             </div>
         </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu-overlay" class="fixed inset-0 bg-black opacity-0 invisible md:hidden transition-all duration-300 ease-in-out z-30"></div>
     </nav>
 
     <!-- HERO SECTION -->
@@ -517,6 +573,67 @@ if ($result_konten->num_rows > 0) {
                 <p>&copy; 2026 FutsalBook. All Rights Reserved.</p>
             </div>
         </div>
+    </footer>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/6288983514206?text=Halo%20Admin%2C%20saya%20ingin%20menanyakan%20ketersediaan%20jadwal%20lapangan%20futsal.%20Mohon%20informasinya." 
+       class="whatsapp-float" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       title="Chat dengan kami di WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- JavaScript for Mobile Menu -->
+    <script>
+        // Get elements
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+
+        // Open menu
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.add('open');
+            mobileMenuOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        });
+
+        // Close menu
+        closeMenuBtn.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+        // Close menu function
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('open');
+            mobileMenuOverlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close menu when clicking on a link
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+
+        // Navbar scroll effect
+        const navbar = document.querySelector('nav');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Close menu when pressing Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && mobileMenu.classList.contains('open')) {
+                closeMobileMenu();
+            }
+        });
+    </script>
+</body>
+</html>
     </footer>
 
     <!-- FLOATING WHATSAPP BUTTON -->

@@ -61,6 +61,20 @@ while ($row = $result_related->fetch_assoc()) {
         nav.scrolled {
             @apply bg-emerald-700 shadow-lg;
         }
+
+        /* Mobile Menu Sidebar Styling */
+        #mobile-menu {
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+        }
+
+        #mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        #mobile-menu-overlay.open {
+            opacity: 0.5;
+            visibility: visible;
+        }
         
         .gallery-image {
             @apply w-full h-96 object-cover rounded-lg;
@@ -159,7 +173,49 @@ while ($row = $result_related->fetch_assoc()) {
             <a href="admin/auth/login.php" class="bg-emerald-600 text-white rounded-lg px-6 py-3 font-semibold hover:bg-emerald-700 hidden md:block">
                 <i class="fas fa-lock mr-2"></i> Admin
             </a>
+
+            <!-- Mobile Menu Toggle Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-2xl text-slate-900 cursor-pointer focus:outline-none">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
+
+        <!-- Mobile Menu Sidebar -->
+        <div id="mobile-menu" class="fixed left-0 top-0 h-full w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out z-40 md:hidden">
+            <!-- Close Button -->
+            <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                <span class="text-xl font-bold text-slate-900">Menu</span>
+                <button id="close-menu-btn" class="text-2xl text-slate-900 focus:outline-none">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Navigation Links -->
+            <div class="flex flex-col gap-0 p-0">
+                <a href="index.php#home" class="px-6 py-4 text-slate-900 font-semibold hover:bg-emerald-50 hover:text-emerald-600 border-b border-gray-100 transition-all" onclick="closeMobileMenu()">
+                    <i class="fas fa-home mr-3 text-emerald-600"></i>Home
+                </a>
+                <a href="index.php#lapangan" class="px-6 py-4 text-slate-900 font-semibold hover:bg-emerald-50 hover:text-emerald-600 border-b border-gray-100 transition-all" onclick="closeMobileMenu()">
+                    <i class="fas fa-futbol mr-3 text-emerald-600"></i>Lapangan
+                </a>
+                <a href="index.php#booking" class="px-6 py-4 text-slate-900 font-semibold hover:bg-emerald-50 hover:text-emerald-600 border-b border-gray-100 transition-all" onclick="closeMobileMenu()">
+                    <i class="fas fa-calendar-check mr-3 text-emerald-600"></i>Booking
+                </a>
+                <a href="index.php#kontak" class="px-6 py-4 text-slate-900 font-semibold hover:bg-emerald-50 hover:text-emerald-600 border-b border-gray-100 transition-all" onclick="closeMobileMenu()">
+                    <i class="fas fa-phone mr-3 text-emerald-600"></i>Kontak
+                </a>
+            </div>
+
+            <!-- Mobile Admin Link -->
+            <div class="mt-6 px-6 py-4 border-t border-gray-200">
+                <a href="admin/auth/login.php" class="block w-full bg-emerald-600 text-white rounded-lg px-6 py-3 font-semibold transition-all hover:bg-emerald-700 text-center">
+                    <i class="fas fa-lock mr-2"></i> Admin Login
+                </a>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu-overlay" class="fixed inset-0 bg-black opacity-0 invisible md:hidden transition-all duration-300 ease-in-out z-30"></div>
     </nav>
 
     <!-- BREADCRUMB -->
@@ -598,6 +654,57 @@ while ($row = $result_related->fetch_assoc()) {
             }
 
             // Redirect ke booking checkout dengan parameter
+            window.location.href = `booking/checkout.php?lapangan_id=<?php echo $lapangan_id; ?>&tanggal=${selectedDate}&jam_mulai=09:00&jam_selesai=10:00`;
+        }
+
+        // Mobile Menu Functions
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+
+        // Open menu
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.add('open');
+            mobileMenuOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        });
+
+        // Close menu
+        closeMenuBtn.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+        // Close menu function
+        function closeMobileMenu() {
+            mobileMenu.classList.remove('open');
+            mobileMenuOverlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close menu when clicking on a link
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+
+        // Navbar scroll effect
+        const navbar = document.querySelector('nav');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Close menu when pressing Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && mobileMenu.classList.contains('open')) {
+                closeMobileMenu();
+            }
+        });
+    </script>
+</body>
+</html>direct ke booking checkout dengan parameter
             window.location.href = `booking/checkout.php?lapangan_id=<?php echo $lapangan_id; ?>&tanggal=${selectedDate}&jam_mulai=09:00&jam_selesai=10:00`;
         }
     </script>
