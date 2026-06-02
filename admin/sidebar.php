@@ -67,28 +67,24 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <!-- Navigation -->
     <nav class="flex-1 px-3 py-4 space-y-2 overflow-y-auto">
         <a href="dashboard.php" class="block py-3 px-4 rounded-lg transition flex items-center gap-3 <?php echo $current_page === 'dashboard.php' ? 'bg-emerald-600 font-semibold text-white' : 'text-gray-300 hover:bg-slate-800 hover:text-white'; ?>" onclick="closeSidebar()">
-            <i class="fas fa-chart-line w-5"></i>
-            <span>Dashboard</span>
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-chart-line text-white"></i>
+            </div>
+            <span class="text-sm md:text-base">Dashboard</span>
         </a>
 
         <a href="manage_lapangan.php" class="block py-3 px-4 rounded-lg transition flex items-center gap-3 <?php echo $current_page === 'manage_lapangan.php' ? 'bg-emerald-600 font-semibold text-white' : 'text-gray-300 hover:bg-slate-800 hover:text-white'; ?>" onclick="closeSidebar()">
-            <i class="fas fa-soccer-ball w-5"></i>
-            <span>Kelola Lapangan</span>
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-futbol text-white"></i>
+            </div>
+            <span class="text-sm md:text-base">Kelola Lapangan</span>
         </a>
 
         <a href="manage_booking.php" class="block py-3 px-4 rounded-lg transition flex items-center gap-3 <?php echo $current_page === 'manage_booking.php' ? 'bg-emerald-600 font-semibold text-white' : 'text-gray-300 hover:bg-slate-800 hover:text-white'; ?>" onclick="closeSidebar()">
-            <i class="fas fa-calendar-check w-5"></i>
-            <span>Kelola Booking</span>
-        </a>
-
-        <a href="manage_konten.php" class="block py-3 px-4 rounded-lg transition flex items-center gap-3 <?php echo $current_page === 'manage_konten.php' ? 'bg-emerald-600 font-semibold text-white' : 'text-gray-300 hover:bg-slate-800 hover:text-white'; ?>" onclick="closeSidebar()">
-            <i class="fas fa-file-alt w-5"></i>
-            <span>Kelola Konten</span>
-        </a>
-
-        <a href="manage_gallery.php" class="block py-3 px-4 rounded-lg transition flex items-center gap-3 <?php echo $current_page === 'manage_gallery.php' ? 'bg-emerald-600 font-semibold text-white' : 'text-gray-300 hover:bg-slate-800 hover:text-white'; ?>" onclick="closeSidebar()">
-            <i class="fas fa-images w-5"></i>
-            <span>Kelola Gallery</span>
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-calendar-check text-white"></i>
+            </div>
+            <span class="text-sm md:text-base">Kelola Booking</span>
         </a>
     </nav>
 

@@ -3,7 +3,8 @@
 -- Website Booking Lapangan Futsal
 -- =====================================================
 -- WARNING: Hati-hati! Script ini akan MENGHAPUS semua data
--- Gunakan hanya saat ingin reset database sepenuhnya
+-- Gunakan untuk menghapus data tanpa perlu menghapus struktur tabel
+-- Setelah script ini, jalankan database.sql untuk recreate struktur & data
 -- =====================================================
 
 -- Drop tables dengan urutan yang benar (mempertimbangkan foreign key)
@@ -15,9 +16,6 @@ DROP TABLE IF EXISTS tb_pembayaran;
 DROP TABLE IF EXISTS tb_booking;
 DROP TABLE IF EXISTS tb_lapangan_gallery;
 DROP TABLE IF EXISTS tb_lapangan;
-DROP TABLE IF EXISTS tb_konten;
 DROP TABLE IF EXISTS tb_admin;
-
--- Setelah menjalankan script ini, jalankan database.sql untuk re-create structure
 
 COMMIT;

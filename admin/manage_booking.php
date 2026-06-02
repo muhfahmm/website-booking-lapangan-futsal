@@ -80,117 +80,152 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Booking</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-50 flex">
+<body class="bg-gray-100">
     <?php include 'sidebar.php'; ?>
 
-    <main class="ml-64 flex-1 p-8">
-        <header class="mb-6">
-            <h1 class="text-4xl font-bold text-emerald-600">Kelola Booking</h1>
-            <div class="mt-2 h-1 w-24 bg-emerald-600"></div>
-        </header>
-
-        <?php echo $message; ?>
-
-        <!-- Form Add/Edit -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-2xl font-semibold mb-4"><?php echo $edit_data ? 'Edit Booking' : 'Tambah Booking Baru'; ?></h2>
-            <form method="POST" class="space-y-4">
-                <input type="hidden" name="action" value="<?php echo $edit_data ? 'edit' : 'add'; ?>">
-                <?php if ($edit_data): ?>
-                    <input type="hidden" name="id" value="<?php echo $edit_data['id']; ?>">
-                <?php endif; ?>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Lapangan</label>
-                        <select name="lapangan_id" required class="w-full px-3 py-2 border rounded">
-                            <option value="">Pilih Lapangan</option>
-                            <?php foreach ($lapangan_list as $lap): ?>
-                                <option value="<?php echo $lap['id']; ?>" <?php echo ($edit_data['lapangan_id'] ?? '') == $lap['id'] ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($lap['nama']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+    <main class="min-h-screen">
+        <!-- Header -->
+        <div class="bg-white border-b border-gray-200 p-4 md:p-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                        <i class="fas fa-calendar-check text-white text-xl"></i>
                     </div>
                     <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Nama Pemesan</label>
-                        <input type="text" name="nama_pemesan" required class="w-full px-3 py-2 border rounded" placeholder="Nama" value="<?php echo $edit_data['nama_pemesan'] ?? ''; ?>">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Tanggal</label>
-                        <input type="date" name="tanggal" required class="w-full px-3 py-2 border rounded" value="<?php echo $edit_data['tanggal'] ?? ''; ?>">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Status</label>
-                        <select name="status" class="w-full px-3 py-2 border rounded">
-                            <option value="pending" <?php echo ($edit_data['status'] ?? 'pending') === 'pending' ? 'selected' : ''; ?>>Pending</option>
-                            <option value="confirmed" <?php echo ($edit_data['status'] ?? '') === 'confirmed' ? 'selected' : ''; ?>>Confirmed</option>
-                            <option value="cancelled" <?php echo ($edit_data['status'] ?? '') === 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Jam Mulai</label>
-                        <input type="time" name="jam_mulai" required class="w-full px-3 py-2 border rounded" value="<?php echo $edit_data['jam_mulai'] ?? ''; ?>">
-                    </div>
-                    <div>
-                        <label class="block text-gray-700 font-semibold mb-2">Jam Selesai</label>
-                        <input type="time" name="jam_selesai" required class="w-full px-3 py-2 border rounded" value="<?php echo $edit_data['jam_selesai'] ?? ''; ?>">
+                        <h1 class="text-2xl md:text-4xl font-bold text-slate-900">Kelola Booking</h1>
+                        <p class="text-gray-600 text-sm">Manage pesanan booking lapangan futsal</p>
                     </div>
                 </div>
-                <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700"><?php echo $edit_data ? 'Update' : 'Tambah'; ?></button>
-                <?php if ($edit_data): ?>
-                    <a href="manage_booking.php" class="inline-block ml-2 bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Batal</a>
-                <?php endif; ?>
-            </form>
+            </div>
         </div>
 
-        <!-- Table -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            <table class="w-full">
-                <thead class="bg-emerald-600 text-white">
-                    <tr>
-                        <th class="px-6 py-3 text-left">ID</th>
-                        <th class="px-6 py-3 text-left">Lapangan</th>
-                        <th class="px-6 py-3 text-left">Pemesan</th>
-                        <th class="px-6 py-3 text-left">Tanggal</th>
-                        <th class="px-6 py-3 text-left">Jam</th>
-                        <th class="px-6 py-3 text-left">Status</th>
-                        <th class="px-6 py-3 text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (count($booking_list) > 0): ?>
-                        <?php foreach ($booking_list as $item): ?>
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="px-6 py-3"><?php echo $item['id']; ?></td>
-                                <td class="px-6 py-3"><?php echo htmlspecialchars($item['lapangan_nama'] ?? '-'); ?></td>
-                                <td class="px-6 py-3"><?php echo htmlspecialchars($item['nama_pemesan']); ?></td>
-                                <td class="px-6 py-3"><?php echo $item['tanggal']; ?></td>
-                                <td class="px-6 py-3"><?php echo $item['jam_mulai']; ?> - <?php echo $item['jam_selesai']; ?></td>
-                                <td class="px-6 py-3">
-                                    <span class="px-3 py-1 rounded text-sm 
-                                        <?php 
-                                        if ($item['status'] === 'confirmed') echo 'bg-green-100 text-green-700';
-                                        elseif ($item['status'] === 'pending') echo 'bg-yellow-100 text-yellow-700';
-                                        else echo 'bg-red-100 text-red-700';
-                                        ?>">
-                                        <?php echo ucfirst($item['status']); ?>
-                                    </span>
-                                </td>
-                                <td class="px-6 py-3 text-center">
-                                    <a href="manage_booking.php?edit=<?php echo $item['id']; ?>" class="text-blue-600 hover:underline mr-3">Edit</a>
-                                    <a href="manage_booking.php?action=delete&id=<?php echo $item['id']; ?>" onclick="return confirm('Yakin ingin menghapus?')" class="text-red-600 hover:underline">Hapus</a>
-                                </td>
+        <!-- Content -->
+        <div class="p-4 md:p-8">
+            <div class="max-w-7xl mx-auto">
+                <?php echo $message; ?>
+
+                <!-- Form Add/Edit -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-6">
+                        <i class="fas fa-plus-circle text-blue-600 mr-2"></i>
+                        <?php echo $edit_data ? 'Edit Booking' : 'Tambah Booking Baru'; ?>
+                    </h2>
+                    <form method="POST" class="space-y-4">
+                        <input type="hidden" name="action" value="<?php echo $edit_data ? 'edit' : 'add'; ?>">
+                        <?php if ($edit_data): ?>
+                            <input type="hidden" name="id" value="<?php echo $edit_data['id']; ?>">
+                        <?php endif; ?>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">Lapangan</label>
+                                <select name="lapangan_id" required class="w-full px-4 py-3 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Pilih Lapangan</option>
+                                    <?php foreach ($lapangan_list as $lap): ?>
+                                        <option value="<?php echo $lap['id']; ?>" <?php echo ($edit_data['lapangan_id'] ?? '') == $lap['id'] ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($lap['nama']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">Nama Pemesan</label>
+                                <input type="text" name="nama_pemesan" required class="w-full px-4 py-3 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama" value="<?php echo htmlspecialchars($edit_data['nama_pemesan'] ?? ''); ?>">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">Tanggal</label>
+                                <input type="date" name="tanggal" required class="w-full px-4 py-3 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="<?php echo $edit_data['tanggal'] ?? ''; ?>">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">Status</label>
+                                <select name="status" class="w-full px-4 py-3 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="pending" <?php echo ($edit_data['status'] ?? 'pending') === 'pending' ? 'selected' : ''; ?>>Pending</option>
+                                    <option value="confirmed" <?php echo ($edit_data['status'] ?? '') === 'confirmed' ? 'selected' : ''; ?>>Confirmed</option>
+                                    <option value="cancelled" <?php echo ($edit_data['status'] ?? '') === 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">Jam Mulai</label>
+                                <input type="time" name="jam_mulai" required class="w-full px-4 py-3 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="<?php echo $edit_data['jam_mulai'] ?? ''; ?>">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">Jam Selesai</label>
+                                <input type="time" name="jam_selesai" required class="w-full px-4 py-3 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" value="<?php echo $edit_data['jam_selesai'] ?? ''; ?>">
+                            </div>
+                        </div>
+                        <div class="flex gap-3 pt-2">
+                            <button type="submit" class="bg-blue-600 text-white px-6 py-3 md:py-2 rounded-lg hover:bg-blue-700 transition font-semibold flex items-center gap-2">
+                                <i class="fas fa-save"></i>
+                                <?php echo $edit_data ? 'Update' : 'Tambah'; ?>
+                            </button>
+                            <?php if ($edit_data): ?>
+                                <a href="manage_booking.php" class="inline-block bg-gray-400 text-white px-6 py-3 md:py-2 rounded-lg hover:bg-gray-500 transition font-semibold flex items-center gap-2">
+                                    <i class="fas fa-times"></i>
+                                    Batal
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+                    <table class="w-full text-sm md:text-base">
+                        <thead class="bg-blue-600 text-white">
+                            <tr>
+                                <th class="px-4 md:px-6 py-3 text-left">ID</th>
+                                <th class="px-4 md:px-6 py-3 text-left">Lapangan</th>
+                                <th class="px-4 md:px-6 py-3 text-left">Pemesan</th>
+                                <th class="px-4 md:px-6 py-3 text-left">Tanggal</th>
+                                <th class="px-4 md:px-6 py-3 text-left">Jam</th>
+                                <th class="px-4 md:px-6 py-3 text-left">Status</th>
+                                <th class="px-4 md:px-6 py-3 text-center">Aksi</th>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="7" class="px-6 py-3 text-center text-gray-500">Belum ada data booking</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody class="divide-y">
+                            <?php if (count($booking_list) > 0): ?>
+                                <?php foreach ($booking_list as $item): ?>
+                                    <tr class="hover:bg-gray-50 transition">
+                                        <td class="px-4 md:px-6 py-3 font-semibold text-gray-900"><?php echo $item['id']; ?></td>
+                                        <td class="px-4 md:px-6 py-3"><?php echo htmlspecialchars($item['lapangan_nama'] ?? '-'); ?></td>
+                                        <td class="px-4 md:px-6 py-3"><?php echo htmlspecialchars($item['nama_pemesan']); ?></td>
+                                        <td class="px-4 md:px-6 py-3"><?php echo $item['tanggal']; ?></td>
+                                        <td class="px-4 md:px-6 py-3 text-xs md:text-sm"><?php echo $item['jam_mulai']; ?> - <?php echo $item['jam_selesai']; ?></td>
+                                        <td class="px-4 md:px-6 py-3">
+                                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold
+                                                <?php 
+                                                if ($item['status'] === 'confirmed') echo 'bg-green-100 text-green-700';
+                                                elseif ($item['status'] === 'pending') echo 'bg-yellow-100 text-yellow-700';
+                                                else echo 'bg-red-100 text-red-700';
+                                                ?>">
+                                                <i class="fas fa-circle text-xs"></i>
+                                                <?php echo ucfirst($item['status']); ?>
+                                            </span>
+                                        </td>
+                                        <td class="px-4 md:px-6 py-3 text-center">
+                                            <a href="manage_booking.php?edit=<?php echo $item['id']; ?>" class="text-blue-600 hover:text-blue-800 hover:underline mr-3 inline-block py-2">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="manage_booking.php?action=delete&id=<?php echo $item['id']; ?>" onclick="return confirm('Yakin ingin menghapus?')" class="text-red-600 hover:text-red-800 hover:underline inline-block py-2">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                        <i class="fas fa-inbox text-2xl mb-2"></i>
+                                        <p>Belum ada data booking</p>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </main>
 </body>

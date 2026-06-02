@@ -56,14 +56,6 @@ CREATE TABLE tb_booking (
     INDEX idx_status (status)
 );
 
-CREATE TABLE tb_konten (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    judul VARCHAR(200) NOT NULL,
-    isi TEXT NOT NULL,
-    tipe ENUM('artikel', 'berita', 'panduan') DEFAULT 'artikel',
-    dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Payment Tables
 CREATE TABLE tb_pembayaran (
     id INT PRIMARY KEY AUTO_INCREMENT,
