@@ -147,7 +147,7 @@ if (isset($_GET['edit'])) {
                             <!-- Gambar -->
                             <div class="relative h-48 bg-gray-200">
                                 <?php if ($lapangan['gambar']): ?>
-                                    <img src="<?php echo htmlspecialchars($lapangan['gambar']); ?>" alt="<?php echo htmlspecialchars($lapangan['nama']); ?>" class="w-full h-full object-cover">
+                                    <img src="../<?php echo htmlspecialchars($lapangan['gambar']); ?>" alt="<?php echo htmlspecialchars($lapangan['nama']); ?>" class="w-full h-full object-cover">
                                 <?php else: ?>
                                     <div class="w-full h-full flex items-center justify-center bg-gray-300">
                                         <i class="fas fa-image text-gray-400 text-4xl"></i>
@@ -363,7 +363,7 @@ if (isset($_GET['edit'])) {
                     const mainImagePreview = document.getElementById('mainImagePreview');
                     const mainImagePreviewImg = document.getElementById('mainImagePreviewImg');
                     if (data.gambar) {
-                        mainImagePreviewImg.src = data.gambar;
+                        mainImagePreviewImg.src = '../' + data.gambar;
                         mainImagePreview.classList.remove('hidden');
                     } else {
                         mainImagePreviewImg.src = '';
