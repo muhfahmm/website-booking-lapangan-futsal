@@ -245,6 +245,9 @@ if (isset($_GET['edit'])) {
                             <input type="file" id="gambar" name="gambar" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">
                             <i class="fas fa-image absolute right-3 top-3 text-gray-400"></i>
                         </div>
+                        <div id="mainImagePreview" class="mt-3 rounded-lg overflow-hidden border border-dashed border-gray-300 bg-gray-50 hidden">
+                            <img id="mainImagePreviewImg" src="" alt="Preview Gambar Lapangan" class="w-full h-48 object-cover">
+                        </div>
                         <p class="text-sm text-gray-500 mt-1"><i class="fas fa-info-circle"></i> Format: JPG, PNG (Max 2MB) - Gambar ini akan ditampilkan di halaman utama</p>
                     </div>
 
@@ -327,6 +330,8 @@ if (isset($_GET['edit'])) {
             document.getElementById('id').value = '';
             document.getElementById('modalTitle').innerText = 'Tambah Lapangan Baru';
             document.getElementById('imagePreview').innerHTML = '';
+            document.getElementById('mainImagePreview').classList.add('hidden');
+            document.getElementById('mainImagePreviewImg').src = '';
             document.getElementById('formModal').classList.remove('hidden');
         }
 
@@ -354,6 +359,17 @@ if (isset($_GET['edit'])) {
                     document.getElementById('tipe_lantai').value = data.tipe_lantai || 'Rumput Sintetis';
                     document.getElementById('modalTitle').innerText = 'Edit Lapangan';
                     document.getElementById('imagePreview').innerHTML = '';
+
+                    const mainImagePreview = document.getElementById('mainImagePreview');
+                    const mainImagePreviewImg = document.getElementById('mainImagePreviewImg');
+                    if (data.gambar) {
+                        mainImagePreviewImg.src = data.gambar;
+                        mainImagePreview.classList.remove('hidden');
+                    } else {
+                        mainImagePreviewImg.src = '';
+                        mainImagePreview.classList.add('hidden');
+                    }
+
                     document.getElementById('formModal').classList.remove('hidden');
                 })
                 .catch(err => {
@@ -361,14 +377,30 @@ if (isset($_GET['edit'])) {
                 });
         }
 
-        // Preview multiple images
+        function updateMainImagePreview(file) {
+            const preview = document.getElementById('mainImagePreview');
+            const previewImg = document.getElementById('mainImagePreviewImg');
+            if (!file) {
+                previewImg.src = '';
+                preview.classList.add('hidden');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                previewImg.src = event.target.result;
+                preview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Preview images
         document.addEventListener('DOMContentLoaded', function() {
             const galleryInput = document.getElementById('gallery_images');
             if (galleryInput) {
-                galleryInput.addEventListener('change', function(e) {
+                galleryInput.addEventListener('change', function() {
                     const preview = document.getElementById('imagePreview');
                     preview.innerHTML = '';
-                    
                     const files = Array.from(this.files);
                     if (files.length === 0) {
                         preview.innerHTML = '<p class="col-span-4 text-gray-400 text-sm text-center py-4"><i class="fas fa-images"></i> Preview gambar akan ditampilkan di sini</p>';
@@ -396,6 +428,14 @@ if (isset($_GET['edit'])) {
                         };
                         reader.readAsDataURL(file);
                     });
+                });
+            }
+
+            const mainImageInput = document.getElementById('gambar');
+            if (mainImageInput) {
+                mainImageInput.addEventListener('change', function() {
+                    const file = this.files[0];
+                    updateMainImagePreview(file);
                 });
             }
         });
