@@ -136,54 +136,98 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                 </div>
 
                 <!-- Table -->
-                <div class="bg-white rounded-lg shadow-md overflow-x-auto">
-                    <table class="w-full text-sm md:text-base">
-                        <thead class="bg-purple-600 text-white">
-                            <tr>
-                                <th class="px-4 md:px-6 py-3 text-left">ID</th>
-                                <th class="px-4 md:px-6 py-3 text-left">Judul</th>
-                                <th class="px-4 md:px-6 py-3 text-left">Isi (Preview)</th>
-                                <th class="px-4 md:px-6 py-3 text-left">Tipe</th>
-                                <th class="px-4 md:px-6 py-3 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y">
-                            <?php if (count($konten_list) > 0): ?>
-                                <?php foreach ($konten_list as $item): ?>
-                                    <tr class="hover:bg-gray-50 transition">
-                                        <td class="px-4 md:px-6 py-3 font-semibold text-gray-900"><?php echo $item['id']; ?></td>
-                                        <td class="px-4 md:px-6 py-3 font-semibold"><?php echo htmlspecialchars($item['judul']); ?></td>
-                                        <td class="px-4 md:px-6 py-3">
-                                            <div class="max-w-xs truncate text-gray-600 text-xs md:text-sm">
-                                                <?php echo htmlspecialchars(substr($item['isi'], 0, 100)); ?>...
-                                            </div>
-                                        </td>
-                                        <td class="px-4 md:px-6 py-3">
-                                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
-                                                <i class="fas fa-tag"></i>
-                                                <?php echo ucfirst($item['tipe']); ?>
-                                            </span>
-                                        </td>
-                                        <td class="px-4 md:px-6 py-3 text-center">
-                                            <a href="manage_konten.php?edit=<?php echo $item['id']; ?>" class="text-blue-600 hover:text-blue-800 hover:underline mr-3 inline-block py-2">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="manage_konten.php?action=delete&id=<?php echo $item['id']; ?>" onclick="return confirm('Yakin ingin menghapus?')" class="text-red-600 hover:text-red-800 hover:underline inline-block py-2">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <!-- Desktop Table -->
+                    <div class="hidden md:block overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-purple-600 text-white">
+                                <tr>
+                                    <th class="px-4 py-3 text-left">ID</th>
+                                    <th class="px-4 py-3 text-left">Judul</th>
+                                    <th class="px-4 py-3 text-left">Isi (Preview)</th>
+                                    <th class="px-4 py-3 text-left">Tipe</th>
+                                    <th class="px-4 py-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                <?php if (count($konten_list) > 0): ?>
+                                    <?php foreach ($konten_list as $item): ?>
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="px-4 py-3 font-semibold text-gray-900"><?php echo $item['id']; ?></td>
+                                            <td class="px-4 py-3 font-semibold"><?php echo htmlspecialchars($item['judul']); ?></td>
+                                            <td class="px-4 py-3">
+                                                <div class="max-w-xs truncate text-gray-600 text-sm">
+                                                    <?php echo htmlspecialchars(substr($item['isi'], 0, 100)); ?>...
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
+                                                    <i class="fas fa-tag"></i>
+                                                    <?php echo ucfirst($item['tipe']); ?>
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-3 text-center">
+                                                <a href="manage_konten.php?edit=<?php echo $item['id']; ?>" class="text-blue-600 hover:text-blue-800 mr-3 inline-block">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="manage_konten.php?action=delete&id=<?php echo $item['id']; ?>" onclick="return confirm('Yakin ingin menghapus?')" class="text-red-600 hover:text-red-800 inline-block">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                            <i class="fas fa-inbox text-2xl mb-2"></i>
+                                            <p>Belum ada data konten</p>
                                         </td>
                                     </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="5" class="px-6 py-8 text-center text-gray-500">
-                                        <i class="fas fa-inbox text-2xl mb-2"></i>
-                                        <p>Belum ada data konten</p>
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Mobile Card View -->
+                    <div class="md:hidden divide-y">
+                        <?php if (count($konten_list) > 0): ?>
+                            <?php foreach ($konten_list as $item): ?>
+                                <div class="p-4 space-y-3 border-b last:border-b-0 hover:bg-gray-50 transition">
+                                    <div class="flex justify-between items-start gap-2">
+                                        <div class="flex-1">
+                                            <p class="text-xs text-gray-500 font-semibold">ID #{<?php echo $item['id']; ?>}</p>
+                                            <p class="font-bold text-gray-900"><?php echo htmlspecialchars($item['judul']); ?></p>
+                                        </div>
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 flex-shrink-0">
+                                            <i class="fas fa-tag"></i>
+                                            <?php echo ucfirst($item['tipe']); ?>
+                                        </span>
+                                    </div>
+
+                                    <div class="bg-gray-50 p-3 rounded text-sm text-gray-700">
+                                        <p class="text-xs text-gray-500 font-semibold mb-1">Isi Preview:</p>
+                                        <p class="line-clamp-2"><?php echo htmlspecialchars(substr($item['isi'], 0, 150)); ?>...</p>
+                                    </div>
+
+                                    <div class="flex gap-2 pt-2 border-t">
+                                        <a href="manage_konten.php?edit=<?php echo $item['id']; ?>" class="flex-1 bg-blue-600 text-white py-2 rounded text-center text-sm font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                                            <i class="fas fa-edit"></i>
+                                            Edit
+                                        </a>
+                                        <a href="manage_konten.php?action=delete&id=<?php echo $item['id']; ?>" onclick="return confirm('Yakin ingin menghapus?')" class="flex-1 bg-red-600 text-white py-2 rounded text-center text-sm font-semibold hover:bg-red-700 transition flex items-center justify-center gap-2">
+                                            <i class="fas fa-trash"></i>
+                                            Hapus
+                                        </a>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="p-8 text-center text-gray-500">
+                                <i class="fas fa-inbox text-3xl mb-3 block"></i>
+                                <p>Belum ada data konten</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
