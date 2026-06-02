@@ -1,11 +1,38 @@
 <?php
 session_start();
-require_once __DIR__ . '/../config/koneksi.php'; // Database connection
-
-// Redirect to login if not authenticated
+require_once __DIR__ . '/../config/koneksi.php';
+// Protect page
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     header('Location: auth/login.php');
     exit();
+}
+
+// Get data counts
+$lapangan_count = 0;
+$booking_count = 0;
+$konten_count = 0;
+
+// Query lapangan count
+if (isset($conn)) {
+    $result = $conn->query('SELECT COUNT(*) as total FROM tb_lapangan');
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $lapangan_count = $row['total'];
+    }
+    
+    // Query booking count
+    $result = $conn->query('SELECT COUNT(*) as total FROM tb_booking');
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $booking_count = $row['total'];
+    }
+    
+    // Query konten count
+    $result = $conn->query('SELECT COUNT(*) as total FROM tb_konten');
+    if ($result) {
+        $row = $result->fetch_assoc();
+        $konten_count = $row['total'];
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -15,32 +42,52 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
 </head>
 <body class="bg-gray-50 flex">
     <?php include 'sidebar.php'; ?>
 
-    <!-- Main Content -->
     <main class="ml-64 flex-1 p-8">
-        <header class="mb-6">
-            <h1 class="text-3xl font-bold text-emerald-600">Dashboard</h1>
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-emerald-600">Dashboard</h1>
             <div class="mt-2 h-1 w-24 bg-emerald-600"></div>
         </header>
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div class="bg-white shadow-md rounded-lg p-6">
-                <h2 class="text-xl font-semibold mb-4">Total Lapangan</h2>
-                <p class="text-2xl font-bold text-emerald-600">0</p>
-            </div>
-            <div class="bg-white shadow-md rounded-lg p-6">
-                <h2 class="text-xl font-semibold mb-4">Total Booking</h2>
-                <p class="text-2xl font-bold text-emerald-600">0</p>
-            </div>
-            <div class="bg-white shadow-md rounded-lg p-6">
-                <h2 class="text-xl font-semibold mb-4">Pengguna Aktif</h2>
-                <p class="text-2xl font-bold text-emerald-600">0</p>
-            </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Kelola Lapangan -->
+            <a href="manage_lapangan.php" class="block bg-white rounded-lg shadow-md hover:shadow-lg transition p-6 cursor-pointer hover:border-emerald-500 border-2 border-transparent">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-700 mb-2">Kelola Lapangan</h2>
+                        <p class="text-3xl font-bold text-emerald-600"><?php echo $lapangan_count; ?></p>
+                    </div>
+                    <div class="text-5xl text-emerald-200">⚽</div>
+                </div>
+                <p class="text-sm text-gray-500 mt-4">Klik untuk kelola lapangan</p>
+            </a>
+
+            <!-- Kelola Booking -->
+            <a href="manage_booking.php" class="block bg-white rounded-lg shadow-md hover:shadow-lg transition p-6 cursor-pointer hover:border-emerald-500 border-2 border-transparent">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-700 mb-2">Kelola Booking</h2>
+                        <p class="text-3xl font-bold text-emerald-600"><?php echo $booking_count; ?></p>
+                    </div>
+                    <div class="text-5xl text-emerald-200">📅</div>
+                </div>
+                <p class="text-sm text-gray-500 mt-4">Klik untuk kelola booking</p>
+            </a>
+
+            <!-- Kelola Konten -->
+            <a href="manage_konten.php" class="block bg-white rounded-lg shadow-md hover:shadow-lg transition p-6 cursor-pointer hover:border-emerald-500 border-2 border-transparent">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-700 mb-2">Kelola Konten</h2>
+                        <p class="text-3xl font-bold text-emerald-600"><?php echo $konten_count; ?></p>
+                    </div>
+                    <div class="text-5xl text-emerald-200">📝</div>
+                </div>
+                <p class="text-sm text-gray-500 mt-4">Klik untuk kelola konten</p>
+            </a>
         </div>
     </main>
 </body>
