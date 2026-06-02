@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require 'config/koneksi.php';
 
 // Get lapangan ID from URL
@@ -366,9 +370,9 @@ while ($row = $result_related->fetch_assoc()) {
                             <i class="fab fa-whatsapp"></i> Booking via WhatsApp
                         </button>
                         
-                        <a href="#" class="w-full bg-emerald-600 text-white px-6 py-4 rounded-lg font-bold transition-all hover:bg-emerald-700 flex items-center justify-center gap-2 block text-center">
+                        <button onclick="openBookingForm()" class="w-full bg-emerald-600 text-white px-6 py-4 rounded-lg font-bold transition-all hover:bg-emerald-700 flex items-center justify-center gap-2">
                             <i class="fas fa-calendar-check"></i> Booking Sekarang
-                        </a>
+                        </button>
                     </div>
 
                     <hr class="border-gray-200 my-6">
@@ -582,6 +586,19 @@ while ($row = $result_related->fetch_assoc()) {
             
             const encodedMessage = encodeURIComponent(message);
             window.open(`https://wa.me/6288983514206?text=${encodedMessage}`, '_blank');
+        }
+
+        // Function untuk membuka form booking
+        function openBookingForm() {
+            const selectedDate = document.getElementById('selectedDate').value;
+            
+            if (!selectedDate) {
+                alert('Silakan pilih tanggal terlebih dahulu');
+                return;
+            }
+
+            // Redirect ke booking checkout dengan parameter
+            window.location.href = `booking/checkout.php?lapangan_id=<?php echo $lapangan_id; ?>&tanggal=${selectedDate}&jam_mulai=09:00&jam_selesai=10:00`;
         }
     </script>
 </body>

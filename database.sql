@@ -42,8 +42,18 @@ CREATE TABLE tb_booking (
     tanggal DATE NOT NULL,
     jam_mulai TIME NOT NULL,
     jam_selesai TIME NOT NULL,
+    total_harga INT DEFAULT 0,
+    payment_status ENUM('pending', 'paid', 'failed') DEFAULT 'pending',
+    no_hp VARCHAR(20),
+    email VARCHAR(100),
+    notes TEXT,
     status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
-    FOREIGN KEY (lapangan_id) REFERENCES tb_lapangan(id) ON DELETE CASCADE
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (lapangan_id) REFERENCES tb_lapangan(id) ON DELETE CASCADE,
+    INDEX idx_payment_status (payment_status),
+    INDEX idx_tanggal (tanggal),
+    INDEX idx_status (status)
 );
 
 CREATE TABLE tb_konten (
@@ -53,6 +63,54 @@ CREATE TABLE tb_konten (
     tipe ENUM('artikel', 'berita', 'panduan') DEFAULT 'artikel',
     dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Payment Tables
+CREATE TABLE tb_pembayaran (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    booking_id INT NOT NULL UNIQUE,
+    transaction_id VARCHAR(100) UNIQUE,
+    amount INT NOT NULL,
+    payment_method VARCHAR(50),
+    status ENUM('pending', 'settlement', 'expire', 'cancel', 'deny') DEFAULT 'pending',
+    midtrans_response JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES tb_booking(id) ON DELETE CASCADE,
+    INDEX idx_transaction_id (transaction_id),
+    INDEX idx_status (status),
+    INDEX idx_created_at (created_at)
+);
+
+CREATE TABLE tb_payment_log (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    booking_id INT,
+    transaction_id VARCHAR(100),
+    action VARCHAR(50),
+    old_status VARCHAR(50),
+    new_status VARCHAR(50),
+    response TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES tb_booking(id) ON DELETE SET NULL,
+    INDEX idx_booking_id (booking_id),
+    INDEX idx_created_at (created_at)
+);
+
+CREATE TABLE tb_payment_methods (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    code VARCHAR(20) UNIQUE,
+    is_active BOOLEAN DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert payment methods
+INSERT INTO tb_payment_methods (name, code) VALUES
+('Credit Card', 'credit_card'),
+('Debit Card', 'debit_card'),
+('E-Wallet', 'e_wallet'),
+('Virtual Account', 'bank_transfer'),
+('QRIS', 'qris'),
+('BNPL', 'bnpl');
 
 -- Sample Data
 INSERT INTO tb_lapangan (nama, harga, harga_weekend, status, gambar, deskripsi, deskripsi_lengkap, fasilitas, rating, lokasi, ukuran, pencahayaan, parkir, tipe_lantai) VALUES 

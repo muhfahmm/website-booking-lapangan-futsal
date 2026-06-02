@@ -1,4 +1,8 @@
 <?php
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require 'config/koneksi.php';
 
 // Ambil data lapangan dari database
@@ -268,9 +272,9 @@ if ($result_konten->num_rows > 0) {
                                         <a href="detail-lapangan.php?id=<?php echo $lapangan['id']; ?>" class="flex-1 bg-emerald-600 text-white rounded-lg px-6 py-3 font-semibold transition-all hover:bg-emerald-700 flex items-center justify-center gap-2">
                                             <i class="fas fa-info-circle"></i> Detail
                                         </a>
-                                        <button class="flex-1 bg-slate-900 text-white rounded-lg px-6 py-3 font-semibold transition-all hover:bg-slate-800 flex items-center justify-center gap-2">
+                                        <a href="detail-lapangan.php?id=<?php echo $lapangan['id']; ?>" class="flex-1 bg-slate-900 text-white rounded-lg px-6 py-3 font-semibold transition-all hover:bg-slate-800 flex items-center justify-center gap-2">
                                             <i class="fas fa-bookmark"></i> Booking
-                                        </button>
+                                        </a>
                                     </div>
                                 <?php else: ?>
                                     <div class="flex gap-3">
@@ -534,6 +538,70 @@ if ($result_konten->num_rows > 0) {
                 navbar.classList.remove('scrolled');
             }
         });
+
+        // Function untuk membuka form booking dari index/card
+        function openBookingModal(lapanganId, lapanganName) {
+            // Buat modal HTML
+            const modal = document.createElement('div');
+            modal.id = 'bookingModal';
+            modal.innerHTML = 
+                '<div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">' +
+                    '<div class="bg-white rounded-lg max-w-md w-full shadow-2xl">' +
+                        '<div class="bg-emerald-600 text-white p-6">' +
+                            '<div class="flex justify-between items-center">' +
+                                '<h2 class="text-2xl font-bold">Booking ' + lapanganName + '</h2>' +
+                                '<button onclick="closeBookingModal()" class="text-2xl hover:text-yellow-300">&times;</button>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="p-6 space-y-4">' +
+                            '<div>' +
+                                '<label class="block text-sm font-semibold text-slate-900 mb-2">Tanggal Booking</label>' +
+                                '<input type="date" id="modalTanggal" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600" min="' + new Date().toISOString().split('T')[0] + '">' +
+                            '</div>' +
+                            '<div>' +
+                                '<label class="block text-sm font-semibold text-slate-900 mb-2">Jam Mulai</label>' +
+                                '<input type="time" id="modalJamMulai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">' +
+                            '</div>' +
+                            '<div>' +
+                                '<label class="block text-sm font-semibold text-slate-900 mb-2">Jam Selesai</label>' +
+                                '<input type="time" id="modalJamSelesai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">' +
+                            '</div>' +
+                            '<button onclick="submitBooking(' + lapanganId + ')" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition-all">' +
+                                '<i class="fas fa-calendar-check mr-2"></i> Lanjut ke Checkout' +
+                            '</button>' +
+                            '<button onclick="closeBookingModal()" class="w-full bg-gray-200 text-slate-900 py-3 rounded-lg font-bold hover:bg-gray-300 transition-all">' +
+                                'Batal' +
+                            '</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+
+            document.body.appendChild(modal);
+        }
+
+        function closeBookingModal() {
+            const modal = document.getElementById('bookingModal');
+            if (modal) modal.remove();
+        }
+
+        function submitBooking(lapanganId) {
+            const tanggal = document.getElementById('modalTanggal').value;
+            const jam_mulai = document.getElementById('modalJamMulai').value;
+            const jam_selesai = document.getElementById('modalJamSelesai').value;
+
+            if (!tanggal || !jam_mulai || !jam_selesai) {
+                alert('Silakan isi semua field');
+                return;
+            }
+
+            if (jam_selesai <= jam_mulai) {
+                alert('Jam selesai harus lebih besar dari jam mulai');
+                return;
+            }
+
+            // Redirect ke checkout
+            window.location.href = 'booking/checkout.php?lapangan_id=' + lapanganId + '&tanggal=' + tanggal + '&jam_mulai=' + jam_mulai + '&jam_selesai=' + jam_selesai;
+        }
     </script>
 </body>
 </html>
