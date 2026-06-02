@@ -9,29 +9,26 @@ CREATE TABLE tb_admin (
 
 CREATE TABLE tb_lapangan (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    nama_lapangan VARCHAR(50),
-    harga_per_jam INT,
+    nama VARCHAR(100) NOT NULL,
+    harga INT DEFAULT 0,
     status ENUM('tersedia', 'maintenance') DEFAULT 'tersedia'
 );
 
 CREATE TABLE tb_booking (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    nama_pemesan VARCHAR(100),
-    tanggal_booking DATE,
-    jam_mulai TIME,
-    jam_selesai TIME,
-    id_lapangan INT,
-    FOREIGN KEY (id_lapangan) REFERENCES tb_lapangan(id)
+    lapangan_id INT NOT NULL,
+    nama_pemesan VARCHAR(100) NOT NULL,
+    tanggal DATE NOT NULL,
+    jam_mulai TIME NOT NULL,
+    jam_selesai TIME NOT NULL,
+    status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
+    FOREIGN KEY (lapangan_id) REFERENCES tb_lapangan(id) ON DELETE CASCADE
 );
 
 CREATE TABLE tb_konten (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    section_name VARCHAR(50),
-    content_text TEXT,
-    image_path VARCHAR(255)
-);
-CREATE TABLE admin_users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    judul VARCHAR(200) NOT NULL,
+    isi TEXT NOT NULL,
+    tipe ENUM('artikel', 'berita', 'panduan') DEFAULT 'artikel',
+    dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

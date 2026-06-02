@@ -8,7 +8,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 }
 
 // Handle DELETE
-if ($_GET['action'] === 'delete' && isset($_GET['id'])) {
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $id = intval($_GET['id']);
     $conn->query("DELETE FROM tb_lapangan WHERE id = $id");
     header('Location: manage_lapangan.php');

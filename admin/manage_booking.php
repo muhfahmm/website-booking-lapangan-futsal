@@ -8,7 +8,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 }
 
 // Handle DELETE
-if ($_GET['action'] === 'delete' && isset($_GET['id'])) {
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $id = intval($_GET['id']);
     $conn->query("DELETE FROM tb_booking WHERE id = $id");
     header('Location: manage_booking.php');
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 // Get all booking
-$result = $conn->query('SELECT b.*, l.nama as lapangan_nama FROM tb_booking b LEFT JOIN tb_lapangan l ON b.lapangan_id = l.id');
+$result = $conn->query('SELECT b.id, b.lapangan_id, b.nama_pemesan, b.tanggal, b.jam_mulai, b.jam_selesai, b.status, l.nama as lapangan_nama FROM tb_booking b LEFT JOIN tb_lapangan l ON b.lapangan_id = l.id');
 $booking_list = [];
 if ($result) {
     while ($row = $result->fetch_assoc()) {
@@ -69,7 +69,7 @@ if ($lapangan_result) {
 $edit_data = null;
 if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
     $id = intval($_GET['edit']);
-    $result = $conn->query("SELECT * FROM tb_booking WHERE id = $id");
+    $result = $conn->query("SELECT b.id, b.lapangan_id, b.nama_pemesan, b.tanggal, b.jam_mulai, b.jam_selesai, b.status FROM tb_booking b WHERE b.id = $id");
     $edit_data = $result->fetch_assoc();
 }
 ?>
