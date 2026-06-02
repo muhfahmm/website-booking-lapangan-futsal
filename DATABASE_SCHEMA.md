@@ -27,13 +27,23 @@ INSERT INTO tb_admin (username, password) VALUES
 | nama | VARCHAR(100) | NOT NULL | Nama Lapangan |
 | harga | INT | DEFAULT 0 | Harga per jam (Rupiah) |
 | status | ENUM | DEFAULT 'tersedia' | Status: tersedia / maintenance |
+| gambar | VARCHAR(255) | DEFAULT NULL | Path/URL gambar lapangan |
+| deskripsi | TEXT | DEFAULT NULL | Deskripsi singkat lapangan (untuk card) |
+| deskripsi_lengkap | TEXT | DEFAULT NULL | Deskripsi lengkap (untuk halaman detail) |
+| fasilitas | TEXT | DEFAULT NULL | Daftar fasilitas (dipisahkan koma) |
+| rating | DECIMAL(3,2) | DEFAULT 4.5 | Rating lapangan (0-5) |
+| lokasi | VARCHAR(150) | DEFAULT 'Jakarta' | Lokasi lapangan |
+| ukuran | VARCHAR(50) | DEFAULT '40m x 20m' | Ukuran lapangan |
+| pencahayaan | VARCHAR(100) | DEFAULT 'Standar' | Tipe pencahayaan |
+| parkir | VARCHAR(100) | DEFAULT 'Tersedia' | Informasi parkir |
+| tipe_lantai | VARCHAR(100) | DEFAULT 'Rumput Sintetis' | Tipe lantai lapangan |
 
 **Sample Data:**
 ```sql
-INSERT INTO tb_lapangan (nama, harga, status) VALUES 
-('Lapangan A', 50000, 'tersedia'),
-('Lapangan B', 60000, 'tersedia'),
-('Lapangan C', 50000, 'maintenance');
+INSERT INTO tb_lapangan (nama, harga, status, deskripsi, deskripsi_lengkap, fasilitas, rating, lokasi, ukuran, pencahayaan, parkir, tipe_lantai) VALUES 
+('Lapangan A', 125000, 'tersedia', 'Lapangan indoor dengan pencahayaan standar', 'Lapangan A adalah lapangan futsal indoor premium...', 'AC Central, Toilet & Kamar Mandi, Ruang Tunggu, WiFi', 4.86, 'Jakarta Barat', '40m x 20m', 'LED Modern', 'Tersedia (100+ spot)', 'Rumput Sintetis Premium'),
+('Lapangan B', 100000, 'tersedia', 'Lapangan outdoor berkualitas internasional', 'Lapangan B adalah lapangan futsal outdoor terbesar...', 'Pencahayaan Profesional, Tribun, Kantor, Area Istirahat', 4.65, 'Jakarta Timur', '45m x 25m', 'Profesional High-Mast', 'Tersedia (150+ spot)', 'Rumput Sintetis Internasional'),
+('Lapangan C', 75000, 'tersedia', 'Lapangan indoor dengan AC dan fasilitas premium', 'Lapangan C menawarkan pengalaman bermain yang nyaman...', 'AC Pendingin, Kamar Ganti, Penyewaan Bola, WiFi Gratis', 4.75, 'Jakarta Pusat', '35m x 18m', 'Standar Plus', 'Tersedia (80+ spot)', 'Rumput Sintetis Standar');
 ```
 
 ---

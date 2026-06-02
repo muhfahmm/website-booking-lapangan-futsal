@@ -76,6 +76,53 @@ if ($result_konten->num_rows > 0) {
         .btn-cta {
             @apply bg-yellow-400 text-slate-900 rounded-lg px-8 py-4 font-bold transition-all hover:bg-yellow-500 hover:shadow-lg;
         }
+        
+        /* Floating WhatsApp Button */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+            text-decoration: none;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease-in-out;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .whatsapp-float:hover {
+            background-color: #1f9d56;
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        /* Responsive WhatsApp Button */
+        @media (max-width: 640px) {
+            .whatsapp-float {
+                bottom: 20px;
+                right: 20px;
+                width: 55px;
+                height: 55px;
+                font-size: 28px;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -117,11 +164,11 @@ if ($result_konten->num_rows > 0) {
             <p class="text-lg md:text-2xl mb-8 text-gray-200">
                 Pesan lapangan futsal favorit Anda dengan mudah, cepat, dan terpercaya
             </p>
-            <div class="flex flex-col md:flex-row gap-4 justify-center">
-                <a href="#lapangan" class="btn-cta inline-block">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="#lapangan" class="btn-cta w-full sm:w-auto">
                     <i class="fas fa-calendar-check mr-2"></i> Booking Sekarang
                 </a>
-                <a href="#kontak" class="bg-white text-emerald-600 rounded-lg px-8 py-4 font-bold transition-all hover:bg-gray-100 inline-block">
+                <a href="#kontak" class="bg-white text-emerald-600 rounded-lg px-8 py-4 font-bold transition-all hover:bg-gray-100 w-full sm:w-auto">
                     <i class="fas fa-phone mr-2"></i> Hubungi Kami
                 </a>
             </div>
@@ -144,66 +191,98 @@ if ($result_konten->num_rows > 0) {
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <?php if (count($lapangan_list) > 0): ?>
                     <?php foreach ($lapangan_list as $lapangan): ?>
-                        <div class="lapangan-card bg-white border-l-4 border-emerald-600 rounded-lg shadow-sm p-6">
-                            <!-- Icon -->
-                            <div class="mb-4">
-                                <i class="fas fa-futbol text-4xl text-emerald-600"></i>
+                        <div class="lapangan-card bg-white border-l-4 border-emerald-600 rounded-lg shadow-sm overflow-hidden p-0">
+                            <!-- Gambar -->
+                            <div class="relative h-48 bg-gray-200 overflow-hidden">
+                                <?php if ($lapangan['gambar']): ?>
+                                    <img src="<?php echo htmlspecialchars($lapangan['gambar']); ?>" alt="<?php echo htmlspecialchars($lapangan['nama']); ?>" class="w-full h-full object-cover">
+                                <?php else: ?>
+                                    <div class="w-full h-full flex items-center justify-center bg-gray-300">
+                                        <i class="fas fa-futbol text-gray-400 text-6xl"></i>
+                                    </div>
+                                <?php endif; ?>
                             </div>
-                            
-                            <!-- Nama Lapangan -->
-                            <h3 class="text-2xl font-bold text-slate-900 mb-2">
-                                <?php echo htmlspecialchars($lapangan['nama']); ?>
-                            </h3>
-                            
-                            <!-- Status -->
-                            <div class="mb-4">
-                                <?php 
-                                    if ($lapangan['status'] === 'tersedia') {
-                                        echo '<span class="badge-tersedia">
-                                                <i class="fas fa-check-circle mr-1"></i> Tersedia
-                                            </span>';
-                                    } else {
-                                        echo '<span class="badge-maintenance">
-                                                <i class="fas fa-exclamation-circle mr-1"></i> Maintenance
-                                            </span>';
-                                    }
-                                ?>
-                            </div>
-                            
-                            <!-- Harga -->
-                            <div class="mb-6 pb-6 border-b border-gray-200">
-                                <p class="text-gray-600 text-sm mb-1">Harga per Jam</p>
-                                <p class="text-3xl font-bold text-emerald-600">
-                                    Rp <?php echo number_format($lapangan['harga'], 0, ',', '.'); ?>
-                                </p>
-                            </div>
-                            
-                            <!-- Details -->
-                            <div class="mb-6 space-y-3">
-                                <div class="flex items-center gap-2 text-gray-700">
-                                    <i class="fas fa-ruler text-emerald-600 w-5"></i>
-                                    <span>Ukuran: 40m x 20m</span>
+
+                            <!-- Content -->
+                            <div class="p-6">
+                                <!-- Header dengan Icon -->
+                                <div class="flex items-start justify-between mb-3">
+                                    <div>
+                                        <h3 class="text-2xl font-bold text-slate-900 mb-1">
+                                            <?php echo htmlspecialchars($lapangan['nama']); ?>
+                                        </h3>
+                                        <!-- Status Badge -->
+                                        <div class="flex items-center gap-1 mb-3">
+                                            <?php 
+                                                if ($lapangan['status'] === 'tersedia') {
+                                                    echo '<i class="fas fa-check-circle text-emerald-600"></i>';
+                                                    echo '<span class="text-gray-700 font-semibold">Tersedia</span>';
+                                                } else {
+                                                    echo '<i class="fas fa-exclamation-circle text-red-600"></i>';
+                                                    echo '<span class="text-gray-700 font-semibold">Maintenance</span>';
+                                                }
+                                            ?>
+                                        </div>
+                                    </div>
+                                    <div class="bg-emerald-600 text-white rounded-full w-12 h-12 flex items-center justify-center text-2xl">
+                                        <i class="fas fa-futbol"></i>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-2 text-gray-700">
-                                    <i class="fas fa-lightbulb text-emerald-600 w-5"></i>
-                                    <span>Pencahayaan: Standar</span>
+
+                                <!-- Harga -->
+                                <div class="mb-4">
+                                    <p class="text-gray-600 text-xs mb-1 font-semibold">Harga per Jam</p>
+                                    <p class="text-3xl font-bold text-emerald-600">
+                                        Rp <?php echo number_format($lapangan['harga'], 0, ',', '.'); ?>
+                                    </p>
                                 </div>
-                                <div class="flex items-center gap-2 text-gray-700">
-                                    <i class="fas fa-car text-emerald-600 w-5"></i>
-                                    <span>Parkir: Tersedia</span>
+
+                                <!-- Divider -->
+                                <hr class="border-gray-200 my-4">
+
+                                <!-- Details -->
+                                <div class="space-y-3 mb-6">
+                                    <div class="flex items-center gap-3 text-gray-700">
+                                        <i class="fas fa-ruler text-emerald-600 w-5"></i>
+                                        <span class="text-sm">Ukuran: 40m x 20m</span>
+                                    </div>
+                                    <div class="flex items-center gap-3 text-gray-700">
+                                        <i class="fas fa-lightbulb text-emerald-600 w-5"></i>
+                                        <span class="text-sm">Pencahayaan: Standar</span>
+                                    </div>
+                                    <div class="flex items-center gap-3 text-gray-700">
+                                        <i class="fas fa-car text-emerald-600 w-5"></i>
+                                        <span class="text-sm">Parkir: Tersedia</span>
+                                    </div>
+                                    <?php if ($lapangan['rating']): ?>
+                                        <div class="flex items-center gap-3 text-gray-700">
+                                            <i class="fas fa-star text-yellow-400 w-5"></i>
+                                            <span class="text-sm"><?php echo $lapangan['rating']; ?> - <?php echo htmlspecialchars($lapangan['lokasi']); ?></span>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
-                            </div>
-                            
+
                             <!-- CTA Button -->
-                            <?php if ($lapangan['status'] === 'tersedia'): ?>
-                                <button class="w-full btn-primary flex items-center justify-center gap-2">
-                                    <i class="fas fa-bookmark"></i> Booking Sekarang
-                                </button>
-                            <?php else: ?>
-                                <button class="w-full bg-gray-300 text-gray-500 rounded-lg px-6 py-3 font-semibold cursor-not-allowed" disabled>
-                                    <i class="fas fa-ban mr-2"></i> Tidak Tersedia
-                                </button>
-                            <?php endif; ?>
+                                <?php if ($lapangan['status'] === 'tersedia'): ?>
+                                    <div class="flex gap-3">
+                                        <a href="detail-lapangan.php?id=<?php echo $lapangan['id']; ?>" class="flex-1 bg-emerald-600 text-white rounded-lg px-6 py-3 font-semibold transition-all hover:bg-emerald-700 flex items-center justify-center gap-2">
+                                            <i class="fas fa-info-circle"></i> Detail
+                                        </a>
+                                        <button class="flex-1 bg-slate-900 text-white rounded-lg px-6 py-3 font-semibold transition-all hover:bg-slate-800 flex items-center justify-center gap-2">
+                                            <i class="fas fa-bookmark"></i> Booking
+                                        </button>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="flex gap-3">
+                                        <a href="detail-lapangan.php?id=<?php echo $lapangan['id']; ?>" class="flex-1 bg-gray-400 text-white rounded-lg px-6 py-3 font-semibold transition-all hover:bg-gray-500 flex items-center justify-center gap-2">
+                                            <i class="fas fa-info-circle"></i> Detail
+                                        </a>
+                                        <button class="flex-1 bg-gray-300 text-gray-500 rounded-lg px-6 py-3 font-semibold cursor-not-allowed" disabled>
+                                            <i class="fas fa-ban mr-2"></i> Tidak Tersedia
+                                        </button>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -435,6 +514,15 @@ if ($result_konten->num_rows > 0) {
             </div>
         </div>
     </footer>
+
+    <!-- FLOATING WHATSAPP BUTTON -->
+    <a href="https://wa.me/6288983514206?text=Halo%20Admin%2C%20saya%20ingin%20menanyakan%20ketersediaan%20jadwal%20lapangan%20futsal%20untuk%20%5BTanggal%5D.%20Mohon%20informasinya%2C%20terima%20kasih." 
+       class="whatsapp-float" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       title="Chat dengan kami di WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
     <!-- JavaScript untuk Navbar Scroll -->
     <script>

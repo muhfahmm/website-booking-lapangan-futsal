@@ -1,0 +1,425 @@
+<?php
+require 'config/koneksi.php';
+
+// Get lapangan ID from URL
+$lapangan_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+if ($lapangan_id === 0) {
+    header('Location: index.php');
+    exit;
+}
+
+// Get lapangan details from database
+$query = "SELECT * FROM tb_lapangan WHERE id = $lapangan_id";
+$result = $conn->query($query);
+
+if ($result->num_rows === 0) {
+    header('Location: index.php');
+    exit;
+}
+
+$lapangan = $result->fetch_assoc();
+
+// Get related lapangan (other lapangan)
+$query_related = "SELECT * FROM tb_lapangan WHERE id != $lapangan_id ORDER BY RAND() LIMIT 3";
+$result_related = $conn->query($query_related);
+$related_lapangan = [];
+while ($row = $result_related->fetch_assoc()) {
+    $related_lapangan[] = $row;
+}
+?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($lapangan['nama']); ?> - Detail Lapangan Futsal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            scroll-behavior: smooth;
+        }
+        
+        nav {
+            transition: all 0.3s ease-in-out;
+        }
+        
+        nav.scrolled {
+            @apply bg-emerald-700 shadow-lg;
+        }
+        
+        .gallery-image {
+            @apply w-full h-96 object-cover rounded-lg;
+        }
+        
+        .detail-section {
+            @apply bg-white rounded-lg p-6 shadow-md mb-6;
+        }
+        
+        .facility-item {
+            @apply flex items-start gap-3 mb-4;
+        }
+        
+        .facility-icon {
+            @apply text-emerald-600 text-2xl w-8 flex-shrink-0;
+        }
+        
+        .badge-status {
+            @apply inline-block px-4 py-2 rounded-full font-semibold;
+        }
+        
+        .badge-tersedia {
+            @apply bg-green-100 text-green-800;
+        }
+        
+        .badge-maintenance {
+            @apply bg-red-100 text-red-800;
+        }
+        
+        .rating-star {
+            @apply text-yellow-400;
+        }
+        
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+            text-decoration: none;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease-in-out;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .whatsapp-float:hover {
+            background-color: #1f9d56;
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .whatsapp-float {
+                bottom: 20px;
+                right: 20px;
+                width: 55px;
+                height: 55px;
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- NAVBAR -->
+    <nav class="sticky top-0 z-50 bg-transparent">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-futbol text-emerald-600 text-3xl"></i>
+                <span class="text-2xl font-bold text-slate-900">FutsalBook</span>
+            </div>
+            
+            <div class="hidden md:flex gap-8 items-center">
+                <a href="index.php#home" class="text-slate-900 font-semibold hover:text-emerald-600 transition-all">Home</a>
+                <a href="index.php#lapangan" class="text-slate-900 font-semibold hover:text-emerald-600 transition-all">Lapangan</a>
+                <a href="index.php#booking" class="text-slate-900 font-semibold hover:text-emerald-600 transition-all">Booking</a>
+                <a href="index.php#kontak" class="text-slate-900 font-semibold hover:text-emerald-600 transition-all">Kontak</a>
+            </div>
+            
+            <a href="admin/auth/login.php" class="bg-emerald-600 text-white rounded-lg px-6 py-3 font-semibold hover:bg-emerald-700 hidden md:block">
+                <i class="fas fa-lock mr-2"></i> Admin
+            </a>
+        </div>
+    </nav>
+
+    <!-- BREADCRUMB -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center gap-2 text-sm">
+                <a href="index.php" class="text-emerald-600 hover:text-emerald-700 font-semibold">Home</a>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+                <a href="index.php#lapangan" class="text-emerald-600 hover:text-emerald-700 font-semibold">Lapangan</a>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+                <span class="text-gray-600"><?php echo htmlspecialchars($lapangan['nama']); ?></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container mx-auto px-6 py-12">
+        <!-- Header Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <!-- Left - Image & Details -->
+            <div class="md:col-span-2">
+                <!-- Main Image -->
+                <div class="mb-6">
+                    <?php if ($lapangan['gambar']): ?>
+                        <img src="<?php echo htmlspecialchars($lapangan['gambar']); ?>" 
+                             alt="<?php echo htmlspecialchars($lapangan['nama']); ?>" 
+                             class="gallery-image">
+                    <?php else: ?>
+                        <div class="gallery-image bg-gray-300 flex items-center justify-center">
+                            <i class="fas fa-image text-gray-400 text-6xl"></i>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Title & Status -->
+                <div class="mb-6">
+                    <h1 class="text-4xl font-bold text-slate-900 mb-3"><?php echo htmlspecialchars($lapangan['nama']); ?></h1>
+                    <div class="flex flex-wrap gap-3 items-center">
+                        <?php 
+                            if ($lapangan['status'] === 'tersedia') {
+                                echo '<span class="badge-status badge-tersedia">
+                                        <i class="fas fa-check-circle mr-2"></i>Tersedia
+                                    </span>';
+                            } else {
+                                echo '<span class="badge-status badge-maintenance">
+                                        <i class="fas fa-exclamation-circle mr-2"></i>Maintenance
+                                    </span>';
+                            }
+                        ?>
+                        <div class="flex items-center gap-1">
+                            <i class="fas fa-star rating-star"></i>
+                            <span class="font-semibold text-slate-900"><?php echo $lapangan['rating']; ?></span>
+                        </div>
+                        <span class="text-gray-600">
+                            <i class="fas fa-map-marker-alt text-emerald-600 mr-2"></i><?php echo htmlspecialchars($lapangan['lokasi']); ?>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Deskripsi Singkat -->
+                <div class="detail-section">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-4">Tentang Lapangan</h2>
+                    <p class="text-gray-700 leading-relaxed text-lg"><?php echo htmlspecialchars($lapangan['deskripsi_lengkap']); ?></p>
+                </div>
+
+                <!-- Spesifikasi -->
+                <div class="detail-section">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-6">Spesifikasi Lapangan</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                            <i class="fas fa-ruler text-emerald-600 text-3xl"></i>
+                            <div>
+                                <p class="text-gray-600 text-sm">Ukuran</p>
+                                <p class="font-bold text-slate-900"><?php echo htmlspecialchars($lapangan['ukuran']); ?></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                            <i class="fas fa-lightbulb text-emerald-600 text-3xl"></i>
+                            <div>
+                                <p class="text-gray-600 text-sm">Pencahayaan</p>
+                                <p class="font-bold text-slate-900"><?php echo htmlspecialchars($lapangan['pencahayaan']); ?></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                            <i class="fas fa-car text-emerald-600 text-3xl"></i>
+                            <div>
+                                <p class="text-gray-600 text-sm">Parkir</p>
+                                <p class="font-bold text-slate-900"><?php echo htmlspecialchars($lapangan['parkir']); ?></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                            <i class="fas fa-layer-group text-emerald-600 text-3xl"></i>
+                            <div>
+                                <p class="text-gray-600 text-sm">Tipe Lantai</p>
+                                <p class="font-bold text-slate-900"><?php echo htmlspecialchars($lapangan['tipe_lantai']); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fasilitas -->
+                <div class="detail-section">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-6">Fasilitas Lengkap</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <?php 
+                            $fasilitas_list = explode(',', $lapangan['fasilitas']);
+                            foreach ($fasilitas_list as $fasilitas): 
+                                $fasilitas = trim($fasilitas);
+                        ?>
+                            <div class="facility-item">
+                                <div class="facility-icon">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div>
+                                    <p class="text-slate-900 font-semibold"><?php echo htmlspecialchars($fasilitas); ?></p>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right - Pricing & Booking -->
+            <div>
+                <!-- Harga Card -->
+                <div class="detail-section sticky top-24">
+                    <div class="mb-6">
+                        <p class="text-gray-600 text-sm mb-2">Harga per Jam</p>
+                        <p class="text-5xl font-bold text-emerald-600 mb-1">
+                            Rp <?php echo number_format($lapangan['harga'], 0, ',', '.'); ?>
+                        </p>
+                        <p class="text-gray-500 text-sm">Harga berlaku untuk 1 jam</p>
+                    </div>
+
+                    <hr class="border-gray-200 my-6">
+
+                    <!-- Booking Buttons -->
+                    <div class="space-y-3">
+                        <button onclick="whatsappBooking()" class="w-full bg-yellow-400 text-slate-900 px-6 py-4 rounded-lg font-bold transition-all hover:bg-yellow-500 flex items-center justify-center gap-2">
+                            <i class="fab fa-whatsapp"></i> Booking via WhatsApp
+                        </button>
+                        
+                        <a href="#" class="w-full bg-emerald-600 text-white px-6 py-4 rounded-lg font-bold transition-all hover:bg-emerald-700 flex items-center justify-center gap-2 block text-center">
+                            <i class="fas fa-calendar-check"></i> Booking Sekarang
+                        </a>
+                    </div>
+
+                    <hr class="border-gray-200 my-6">
+
+                    <!-- Info Box -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p class="text-blue-900 text-sm">
+                            <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                            Hubungi kami untuk mendapatkan penawaran khusus grup atau member bulanan.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Lapangan -->
+        <?php if (count($related_lapangan) > 0): ?>
+            <div class="border-t border-gray-200 pt-12">
+                <h2 class="text-3xl font-bold text-slate-900 mb-8">Lapangan Lainnya</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <?php foreach ($related_lapangan as $related): ?>
+                        <a href="detail-lapangan.php?id=<?php echo $related['id']; ?>" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all">
+                            <div class="h-48 bg-gray-300 flex items-center justify-center">
+                                <?php if ($related['gambar']): ?>
+                                    <img src="<?php echo htmlspecialchars($related['gambar']); ?>" 
+                                         alt="<?php echo htmlspecialchars($related['nama']); ?>" 
+                                         class="w-full h-full object-cover">
+                                <?php else: ?>
+                                    <i class="fas fa-image text-gray-400 text-6xl"></i>
+                                <?php endif; ?>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="text-xl font-bold text-slate-900 mb-2"><?php echo htmlspecialchars($related['nama']); ?></h3>
+                                <p class="text-emerald-600 font-bold text-lg mb-3">Rp <?php echo number_format($related['harga'], 0, ',', '.'); ?>/jam</p>
+                                <div class="flex items-center justify-between text-sm text-gray-600">
+                                    <span><i class="fas fa-star text-yellow-400 mr-1"></i><?php echo $related['rating']; ?></span>
+                                    <span><i class="fas fa-map-marker-alt text-emerald-600 mr-1"></i><?php echo htmlspecialchars($related['lokasi']); ?></span>
+                                </div>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- FLOATING WHATSAPP BUTTON -->
+    <a href="https://wa.me/6288983514206?text=Halo%20Admin%2C%20saya%20ingin%20menanyakan%20ketersediaan%20jadwal%20lapangan%20futsal%20untuk%20%5BTanggal%5D.%20Mohon%20informasinya%2C%20terima%20kasih." 
+       class="whatsapp-float" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       title="Chat dengan kami di WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-gray-300 py-12 mt-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fas fa-futbol text-emerald-400 text-2xl"></i>
+                        <span class="text-2xl font-bold text-white">FutsalBook</span>
+                    </div>
+                    <p class="text-gray-400">Platform booking lapangan futsal online yang terpercaya dan mudah digunakan.</p>
+                </div>
+
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Menu</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.php#home" class="text-gray-400 hover:text-emerald-400 transition-all">Home</a></li>
+                        <li><a href="index.php#lapangan" class="text-gray-400 hover:text-emerald-400 transition-all">Lapangan</a></li>
+                        <li><a href="index.php#booking" class="text-gray-400 hover:text-emerald-400 transition-all">Booking</a></li>
+                        <li><a href="index.php#kontak" class="text-gray-400 hover:text-emerald-400 transition-all">Kontak</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Bantuan</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-all">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-all">Kebijakan Privasi</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-all">Syarat & Ketentuan</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Ikuti Kami</h3>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-all">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-all">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-all">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-gray-700 mb-6">
+
+            <div class="text-center text-gray-400">
+                <p>&copy; 2026 FutsalBook. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const navbar = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        function whatsappBooking() {
+            const lapanganName = '<?php echo htmlspecialchars($lapangan['nama']); ?>';
+            const harga = '<?php echo htmlspecialchars($lapangan['harga']); ?>';
+            const message = `Halo Admin, saya tertarik booking ${lapanganName} (Rp ${harga}/jam). Mohon informasi ketersediaan untuk [Tanggal]. Terima kasih.`;
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/6288983514206?text=${encodedMessage}`, '_blank');
+        }
+    </script>
+</body>
+</html>
