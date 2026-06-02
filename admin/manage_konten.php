@@ -20,7 +20,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
     <main class="ml-64 flex-1 p-8">
         <header class="mb-6">
-            <h1 class="text-3xl font-bold text-emerald-600">Kelola Konten</h1>
+            <h1 class="text-4xl font-bold text-emerald-600">Kelola Konten</h1>
             <div class="mt-2 h-1 w-24 bg-emerald-600"></div>
         </header>
 
