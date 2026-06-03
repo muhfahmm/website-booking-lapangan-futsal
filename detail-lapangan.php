@@ -377,12 +377,16 @@ while ($row = $result_related->fetch_assoc()) {
                     </div>
 
                     <!-- Time Slot Selection -->
-                    <div class="mb-6">
-                        <label class="block text-gray-600 text-sm font-semibold mb-2">Pilih Jam Main:</label>
-                        <select id="selectedTime" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600" disabled>
-                            <option value="">Pilih tanggal terlebih dahulu</option>
-                        </select>
-                        <p id="timeStatus" class="text-sm text-red-500 mt-2"></p>
+                    <div class="mb-6 grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-600 text-sm font-semibold mb-2">Jam Mulai:</label>
+                            <input type="time" id="selectedTimeStart" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600" onchange="updatePricing()">
+                        </div>
+                        <div>
+                            <label class="block text-gray-600 text-sm font-semibold mb-2">Jam Selesai:</label>
+                            <input type="time" id="selectedTimeEnd" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600" onchange="updatePricing()">
+                        </div>
+                        <p id="timeStatus" class="col-span-2 text-sm text-red-500"></p>
                     </div>
 
                     <hr class="border-gray-200 mb-6">
@@ -588,106 +592,61 @@ while ($row = $result_related->fetch_assoc()) {
         // Dynamic Pricing Logic
         function updatePricing() {
             const dateInput = document.getElementById('selectedDate').value;
+            const startTime = document.getElementById('selectedTimeStart').value;
+            const endTime = document.getElementById('selectedTimeEnd').value;
+
+            // If date not selected, show placeholder price
             if (!dateInput) {
                 document.getElementById('dayType').textContent = 'Pilih tanggal terlebih dahulu';
-                document.getElementById('currentPrice').innerHTML = 'Rp <?php echo number_format($lapangan['harga'], 0, ',', '.'); ?>';
+                document.getElementById('currentPrice').innerHTML = 'Rp <?php echo number_format($lapangan["harga"], 0, ",", "."); ?>';
                 return;
             }
 
             const date = new Date(dateInput);
             const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-            
+
             const weekdayPrice = <?php echo $lapangan['harga']; ?>;
             const weekendPrice = <?php echo $lapangan['harga_weekend']; ?>;
-            
-            // Determine if it's weekend (Saturday = 6, Sunday = 0)
             const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-            const selectedPrice = isWeekend ? weekendPrice : weekdayPrice;
-            
+            const hourlyRate = isWeekend ? weekendPrice : weekdayPrice;
+
             // Format date for display
-            const dateFormatter = new Intl.DateTimeFormat('id-ID', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+            const dateFormatter = new Intl.DateTimeFormat('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
             });
             const formattedDate = dateFormatter.format(date);
-            
-            const dayType = isWeekend ? '<i class="fas fa-calendar-days text-blue-500 mr-2"></i>Weekend' : '<i class="fas fa-calendar-days text-yellow-500 mr-2"></i>Weekday';
-            
-            document.getElementById('dayType').innerHTML = `${dayType} - ${formattedDate}`;
-            document.getElementById('currentPrice').innerHTML = `Rp ${selectedPrice.toLocaleString('id-ID')}`;
+            const dayLabel = isWeekend ? '<i class="fas fa-calendar-days text-blue-500 mr-2"></i>Weekend' : '<i class="fas fa-calendar-days text-yellow-500 mr-2"></i>Weekday';
+            document.getElementById('dayType').innerHTML = `${dayLabel} - ${formattedDate}`;
+
+            // If both times are provided, calculate duration and total price
+            if (startTime && endTime) {
+                // Parse times as today dates for diff
+                const startDate = new Date(`1970-01-01T${startTime}`);
+                const endDate = new Date(`1970-01-01T${endTime}`);
+                let diffMs = endDate - startDate;
+                if (diffMs <= 0) {
+                    // Invalid range
+                    document.getElementById('currentPrice').innerHTML = 'Invalid time range';
+                    return;
+                }
+                const hours = diffMs / (1000 * 60 * 60);
+                const total = hourlyRate * hours;
+                document.getElementById('currentPrice').innerHTML = `Rp ${Math.round(total).toLocaleString('id-ID')}`;
+            } else {
+                // If times not set yet, show hourly price only
+                document.getElementById('currentPrice').innerHTML = `Rp ${hourlyRate.toLocaleString('id-ID')}`;
+            }
         }
 
-        // Check availability and populate time slots
+        // Check availability
+        // onDateChange retained for potential future use; currently does not populate time slots as custom inputs are used.
         function onDateChange() {
+            // No action needed because user selects start and end times manually.
+            // Could keep pricing update if needed.
             updatePricing();
-            
-            const dateInput = document.getElementById('selectedDate').value;
-            const timeSelect = document.getElementById('selectedTime');
-            const timeStatus = document.getElementById('timeStatus');
-            
-            if (!dateInput) {
-                timeSelect.disabled = true;
-                timeSelect.innerHTML = '<option value="">Pilih tanggal terlebih dahulu</option>';
-                return;
-            }
-            
-            timeStatus.textContent = 'Memeriksa ketersediaan jam...';
-            timeSelect.disabled = true;
-            
-            const lapanganId = <?php echo $lapangan_id; ?>;
-            
-            fetch(`booking/check_availability.php?lapangan_id=${lapanganId}&tanggal=${dateInput}`)
-                .then(res => res.json())
-                .then(bookedSlots => {
-                    timeStatus.textContent = '';
-                    timeSelect.disabled = false;
-                    timeSelect.innerHTML = '';
-                    
-                    // Generate 1-hour slots from 08:00 to 22:00
-                    const startHour = 8;
-                    const endHour = 22;
-                    
-                    let availableCount = 0;
-                    
-                    // Add default option
-                    const defaultOpt = document.createElement('option');
-                    defaultOpt.value = '';
-                    defaultOpt.textContent = '-- Pilih Jam --';
-                    timeSelect.appendChild(defaultOpt);
-                    
-                    for (let h = startHour; h < endHour; h++) {
-                        const startStr = String(h).padStart(2, '0') + ':00';
-                        const endStr = String(h + 1).padStart(2, '0') + ':00';
-                        const slotValue = `${startStr}-${endStr}`;
-                        
-                        // Check if this slot overlaps with any booked slot
-                        const isBooked = bookedSlots.some(booked => {
-                            return booked.start < endStr && booked.end > startStr;
-                        });
-                        
-                        const option = document.createElement('option');
-                        option.value = slotValue;
-                        if (isBooked) {
-                            option.disabled = true;
-                            option.textContent = `${startStr} - ${endStr} (Sudah Dipesan)`;
-                            option.className = 'text-gray-400 bg-gray-100';
-                        } else {
-                            option.textContent = `${startStr} - ${endStr} (Tersedia)`;
-                            availableCount++;
-                        }
-                        timeSelect.appendChild(option);
-                    }
-                    
-                    if (availableCount === 0) {
-                        timeStatus.textContent = 'Semua jam pada tanggal ini sudah dipesan.';
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    timeStatus.textContent = 'Gagal memeriksa ketersediaan jam.';
-                });
         }
 
         // Navbar scroll effect
@@ -703,7 +662,8 @@ while ($row = $result_related->fetch_assoc()) {
         function whatsappBooking() {
             const lapanganName = '<?php echo htmlspecialchars($lapangan['nama']); ?>';
             const dateInput = document.getElementById('selectedDate').value;
-            const timeSelect = document.getElementById('selectedTime').value;
+            const timeStart = document.getElementById('selectedTimeStart').value;
+            const timeEnd = document.getElementById('selectedTimeEnd').value;
             
             let message;
             if (dateInput) {
@@ -715,8 +675,8 @@ while ($row = $result_related->fetch_assoc()) {
                 });
                 const formattedDate = dateFormatter.format(date);
                 
-                if (timeSelect) {
-                    message = `Halo Admin, saya tertarik booking ${lapanganName} untuk tanggal ${formattedDate} jam ${timeSelect}. Mohon informasi konfirmasinya. Terima kasih.`;
+                if (timeStart && timeEnd) {
+                    message = `Halo Admin, saya tertarik booking ${lapanganName} untuk tanggal ${formattedDate} jam ${timeStart}-${timeEnd}. Mohon informasi konfirmasinya. Terima kasih.`;
                 } else {
                     message = `Halo Admin, saya tertarik booking ${lapanganName} untuk tanggal ${formattedDate}. Mohon informasi ketersediaan jam bermainnya. Terima kasih.`;
                 }
@@ -731,21 +691,21 @@ while ($row = $result_related->fetch_assoc()) {
         // Function untuk membuka form booking
         function openBookingForm() {
             const selectedDate = document.getElementById('selectedDate').value;
-            const selectedTime = document.getElementById('selectedTime').value;
-            
+            const jamMulai = document.getElementById('selectedTimeStart').value;
+            const jamSelesai = document.getElementById('selectedTimeEnd').value;
+
             if (!selectedDate) {
                 alert('Silakan pilih tanggal terlebih dahulu');
                 return;
             }
-            if (!selectedTime) {
-                alert('Silakan pilih jam main terlebih dahulu');
+            if (!jamMulai || !jamSelesai) {
+                alert('Silakan isi jam mulai dan jam selesai');
                 return;
             }
-
-            const times = selectedTime.split('-');
-            const jamMulai = times[0];
-            const jamSelesai = times[1];
-
+            if (jamSelesai <= jamMulai) {
+                alert('Jam selesai harus lebih besar dari jam mulai');
+                return;
+            }
             // Redirect ke booking checkout dengan parameter
             window.location.href = `booking/checkout.php?lapangan_id=<?php echo $lapangan_id; ?>&tanggal=${selectedDate}&jam_mulai=${jamMulai}&jam_selesai=${jamSelesai}`;
         }

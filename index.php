@@ -310,7 +310,7 @@ if ($result_lapangan->num_rows > 0) {
                                         <a href="detail-lapangan.php?id=<?php echo $lapangan['id']; ?>" class="flex-1 bg-emerald-600 text-white rounded-lg px-6 py-3 font-semibold transition-all hover:bg-emerald-700 flex items-center justify-center gap-2">
                                             <i class="fas fa-info-circle"></i> Detail
                                         </a>
-                                        <a href="detail-lapangan.php?id=<?php echo $lapangan['id']; ?>" class="flex-1 bg-slate-900 text-white rounded-lg px-6 py-3 font-semibold transition-all hover:bg-slate-800 flex items-center justify-center gap-2">
+                                        <a href="#" onclick="openBookingModal(<?php echo $lapangan['id']; ?>, '<?php echo addslashes($lapangan['nama']); ?>', <?php echo $lapangan['harga']; ?>)" class="flex-1 bg-slate-900 text-white rounded-lg px-6 py-3 font-semibold transition-all hover:bg-slate-800 flex items-center justify-center gap-2">
                                             <i class="fas fa-bookmark"></i> Booking
                                         </a>
                                     </div>
@@ -614,73 +614,286 @@ if ($result_lapangan->num_rows > 0) {
         // Close menu when pressing Escape key
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape' && mobileMenu && mobileMenu.classList.contains('open')) {
-                closeMobileMenu();
-            }
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Isi Data Pemesan</h3>
+                    <p class="text-gray-600">Masukkan informasi pribadi Anda untuk konfirmasi booking</p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="text-center">
+                    <div class="bg-emerald-600 text-white rounded-full w-16 h-16 flex items-center justify-center text-3xl font-bold mx-auto mb-4">
+                        4
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Konfirmasi</h3>
+                    <p class="text-gray-600">Selesai! Booking Anda sudah dikonfirmasi, siap bermain</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION KONTAK -->
+    <section id="kontak" class="py-16 md:py-24 bg-gradient-to-r from-emerald-600 to-emerald-800 text-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    Hubungi Kami
+                </h2>
+                <p class="text-lg text-emerald-100">
+                    Punya pertanyaan? Kami siap membantu Anda
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Phone -->
+                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-8 text-center">
+                    <i class="fas fa-phone text-5xl mb-4"></i>
+                    <h3 class="text-2xl font-bold mb-2">Telepon</h3>
+                    <p class="text-emerald-100">(+62) 812-3456-7890</p>
+                </div>
+
+                <!-- Email -->
+                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-8 text-center">
+                    <i class="fas fa-envelope text-5xl mb-4"></i>
+                    <h3 class="text-2xl font-bold mb-2">Email</h3>
+                    <p class="text-emerald-100">info@futsalbook.com</p>
+                </div>
+
+                <!-- Location -->
+                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-8 text-center">
+                    <i class="fas fa-map-marker-alt text-5xl mb-4"></i>
+                    <h3 class="text-2xl font-bold mb-2">Lokasi</h3>
+                    <p class="text-emerald-100">Jl. Stadion No. 123, Kota</p>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="mt-12 max-w-2xl mx-auto bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-8">
+                <h3 class="text-2xl font-bold mb-6">Kirim Pesan Kami</h3>
+                <form class="space-y-4">
+                    <div>
+                        <input type="text" placeholder="Nama Anda" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-90 text-slate-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    </div>
+                    <div>
+                        <input type="email" placeholder="Email Anda" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-90 text-slate-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    </div>
+                    <div>
+                        <textarea placeholder="Pesan Anda" rows="4" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-90 text-slate-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-yellow-400 text-slate-900 rounded-lg px-6 py-3 font-bold transition-all hover:bg-yellow-500">
+                        <i class="fas fa-paper-plane mr-2"></i> Kirim Pesan
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-gray-300 py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <!-- About -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fas fa-futbol text-emerald-400 text-2xl"></i>
+                        <span class="text-2xl font-bold text-white">FutsalBook</span>
+                    </div>
+                    <p class="text-gray-400">Platform booking lapangan futsal online yang terpercaya dan mudah digunakan.</p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Menu</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-emerald-400 transition-all">Home</a></li>
+                        <li><a href="#lapangan" class="text-gray-400 hover:text-emerald-400 transition-all">Lapangan</a></li>
+                        <li><a href="#booking" class="text-gray-400 hover:text-emerald-400 transition-all">Booking</a></li>
+                        <li><a href="#kontak" class="text-gray-400 hover:text-emerald-400 transition-all">Kontak</a></li>
+                    </ul>
+                </div>
+
+                <!-- Help -->
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Bantuan</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-all">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-all">Kebijakan Privasi</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-all">Syarat & Ketentuan</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-all">Hubungi Support</a></li>
+                    </ul>
+                </div>
+
+                <!-- Social Media -->
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Ikuti Kami</h3>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-all">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-all">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-all">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-all">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <hr class="border-gray-700 mb-6">
+
+            <!-- Copyright -->
+            <div class="text-center text-gray-400">
+                <p>&copy; 2026 FutsalBook. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/6288983514206?text=Halo%20Admin%2C%20saya%20ingin%20menanyakan%20ketersediaan%20jadwal%20lapangan%20futsal.%20Mohon%20informasinya." 
+       class="whatsapp-float" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       title="Chat dengan kami di WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- JavaScript for Mobile Menu -->
+    <script>
+    // Get elements
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const closeMenuBtn = document.getElementById('close-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+
+    if (mobileMenuBtn && closeMenuBtn && mobileMenu && mobileMenuOverlay) {
+        // Open menu
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.add('open');
+            mobileMenuOverlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
         });
+        // Close menu
+        closeMenuBtn.addEventListener('click', closeMobileMenu);
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+    }
 
-        // Function untuk membuka form booking dari index/card
-        function openBookingModal(lapanganId, lapanganName) {
-            // Buat modal HTML
-            const modal = document.createElement('div');
-            modal.id = 'bookingModal';
-            modal.innerHTML = 
-                '<div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">' +
-                    '<div class="bg-white rounded-lg max-w-md w-full shadow-2xl">' +
-                        '<div class="bg-emerald-600 text-white p-6">' +
-                            '<div class="flex justify-between items-center">' +
-                                '<h2 class="text-2xl font-bold">Booking ' + lapanganName + '</h2>' +
-                                '<button onclick="closeBookingModal()" class="text-2xl hover:text-yellow-300">&times;</button>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="p-6 space-y-4">' +
-                            '<div>' +
-                                '<label class="block text-sm font-semibold text-slate-900 mb-2">Tanggal Booking</label>' +
-                                '<input type="date" id="modalTanggal" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600" min="' + new Date().toISOString().split('T')[0] + '">' +
-                            '</div>' +
-                            '<div>' +
-                                '<label class="block text-sm font-semibold text-slate-900 mb-2">Jam Mulai</label>' +
-                                '<input type="time" id="modalJamMulai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">' +
-                            '</div>' +
-                            '<div>' +
-                                '<label class="block text-sm font-semibold text-slate-900 mb-2">Jam Selesai</label>' +
-                                '<input type="time" id="modalJamSelesai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">' +
-                            '</div>' +
-                            '<button onclick="submitBooking(' + lapanganId + ')" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition-all">' +
-                                '<i class="fas fa-calendar-check mr-2"></i> Lanjut ke Checkout' +
-                            '</button>' +
-                            '<button onclick="closeBookingModal()" class="w-full bg-gray-200 text-slate-900 py-3 rounded-lg font-bold hover:bg-gray-300 transition-all">' +
-                                'Batal' +
-                            '</button>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>';
-
-            document.body.appendChild(modal);
+    // Close menu function
+    function closeMobileMenu() {
+        if (mobileMenu && mobileMenuOverlay) {
+            mobileMenu.classList.remove('open');
+            mobileMenuOverlay.classList.remove('open');
+            document.body.style.overflow = 'auto';
         }
+    }
 
-        function closeBookingModal() {
-            const modal = document.getElementById('bookingModal');
-            if (modal) modal.remove();
+    // Close menu when clicking on a link
+    document.querySelectorAll('#mobile-menu a').forEach(link => {
+        link.addEventListener('click', closeMobileMenu);
+    });
+
+    // Navbar scroll effect
+    const navbar = document.querySelector('nav');
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 100) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
         }
+    });
 
-        function submitBooking(lapanganId) {
-            const tanggal = document.getElementById('modalTanggal').value;
-            const jam_mulai = document.getElementById('modalJamMulai').value;
-            const jam_selesai = document.getElementById('modalJamSelesai').value;
+    // Close menu when pressing Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && mobileMenu && mobileMenu.classList.contains('open')) {
+            closeMobileMenu();
+        }
+    });
 
-            if (!tanggal || !jam_mulai || !jam_selesai) {
-                alert('Silakan isi semua field');
-                return;
+    // Booking modal functions
+    function openBookingModal(lapanganId, lapanganName, hargaPerJam) {
+        const modal = document.createElement('div');
+        modal.id = 'bookingModal';
+        modal.innerHTML = `
+            <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                <div class="bg-white rounded-lg max-w-md w-full shadow-2xl">
+                    <div class="bg-emerald-600 text-white p-6">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-2xl font-bold">Booking ${lapanganName}</h2>
+                            <button onclick="closeBookingModal()" class="text-2xl hover:text-yellow-300">&times;</button>
+                        </div>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-900 mb-2">Tanggal Booking</label>
+                            <input type="date" id="modalTanggal" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600" min="${new Date().toISOString().split('T')[0]}">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-900 mb-2">Jam Mulai</label>
+                            <input type="time" id="modalJamMulai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-900 mb-2">Jam Selesai</label>
+                            <input type="time" id="modalJamSelesai" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                        </div>
+                        <div id="priceDisplay" class="text-center font-semibold text-lg text-emerald-600">Total: Rp 0</div>
+                        <button onclick="submitBooking(${lapanganId}, ${hargaPerJam})" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition-all">Lanjut ke Checkout</button>
+                        <button onclick="closeBookingModal()" class="w-full bg-gray-200 text-slate-900 py-3 rounded-lg font-bold hover:bg-gray-300 transition-all">Batal</button>
+                    </div>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+        const jamMulaiInput = document.getElementById('modalJamMulai');
+        const jamSelesaiInput = document.getElementById('modalJamSelesai');
+        const priceDiv = document.getElementById('priceDisplay');
+
+        function updatePrice() {
+            const jamMulai = jamMulaiInput.value;
+            const jamSelesai = jamSelesaiInput.value;
+            if (jamMulai && jamSelesai) {
+                const start = new Date('2000-01-01T' + jamMulai + ':00');
+                const end = new Date('2000-01-01T' + jamSelesai + ':00');
+                const diffMs = end - start;
+                if (diffMs > 0) {
+                    const hours = diffMs / (1000 * 60 * 60);
+                    const total = hargaPerJam * hours;
+                    priceDiv.textContent = 'Total: Rp ' + Math.round(total).toLocaleString('id-ID');
+                } else {
+                    priceDiv.textContent = 'Total: Rp 0';
+                }
+            } else {
+                priceDiv.textContent = 'Total: Rp 0';
             }
-
-            if (jam_selesai <= jam_mulai) {
-                alert('Jam selesai harus lebih besar dari jam mulai');
-                return;
-            }
-
-            // Redirect ke checkout
-            window.location.href = 'booking/checkout.php?lapangan_id=' + lapanganId + '&tanggal=' + tanggal + '&jam_mulai=' + jam_mulai + '&jam_selesai=' + jam_selesai;
         }
-    </script>
+        jamMulaiInput.addEventListener('input', updatePrice);
+        jamSelesaiInput.addEventListener('input', updatePrice);
+        updatePrice();
+    }
+
+    function closeBookingModal() {
+        const modal = document.getElementById('bookingModal');
+        if (modal) modal.remove();
+    }
+
+    function submitBooking(lapanganId, hargaPerJam) {
+        const tanggal = document.getElementById('modalTanggal').value;
+        const jamMulai = document.getElementById('modalJamMulai').value;
+        const jamSelesai = document.getElementById('modalJamSelesai').value;
+        if (!tanggal || !jamMulai || !jamSelesai) {
+            alert('Silakan isi semua field');
+            return;
+        }
+        const start = new Date('2000-01-01T' + jamMulai + ':00');
+        const end = new Date('2000-01-01T' + jamSelesai + ':00');
+        if (end <= start) {
+            alert('Jam selesai harus lebih besar dari jam mulai');
+            return;
+        }
+        window.location.href = 'booking/checkout.php?lapangan_id=' + lapanganId +
+            '&tanggal=' + tanggal + '&jam_mulai=' + jamMulai + '&jam_selesai=' + jamSelesai;
+    }
+</script>
 </body>
 </html>
