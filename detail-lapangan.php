@@ -158,10 +158,11 @@ while ($row = $result_related->fetch_assoc()) {
     <!-- NAVBAR -->
     <nav class="sticky top-0 z-50 bg-transparent">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
+            <!-- Logo -->
+            <a href="index.php" class="flex items-center gap-2">
                 <i class="fas fa-futbol text-emerald-600 text-3xl"></i>
                 <span class="text-2xl font-bold text-slate-900">FutsalBook</span>
-            </div>
+            </a>
             
             <div class="hidden md:flex gap-8 items-center">
                 <a href="index.php#home" class="text-slate-900 font-semibold hover:text-emerald-600 transition-all">Home</a>
@@ -170,9 +171,8 @@ while ($row = $result_related->fetch_assoc()) {
                 <a href="index.php#kontak" class="text-slate-900 font-semibold hover:text-emerald-600 transition-all">Kontak</a>
             </div>
             
-            <a href="admin/auth/login.php" class="bg-emerald-600 text-white rounded-lg px-6 py-3 font-semibold hover:bg-emerald-700 hidden md:block">
-                <i class="fas fa-lock mr-2"></i> Admin
-            </a>
+            <!-- Space filler for alignment in place of admin button -->
+            <div class="hidden md:block w-[100px]"></div>
 
             <!-- Mobile Menu Toggle Button -->
             <button id="mobile-menu-btn" class="md:hidden text-2xl text-slate-900 cursor-pointer focus:outline-none">
@@ -203,13 +203,6 @@ while ($row = $result_related->fetch_assoc()) {
                 </a>
                 <a href="index.php#kontak" class="px-6 py-4 text-slate-900 font-semibold hover:bg-emerald-50 hover:text-emerald-600 border-b border-gray-100 transition-all" onclick="closeMobileMenu()">
                     <i class="fas fa-phone mr-3 text-emerald-600"></i>Kontak
-                </a>
-            </div>
-
-            <!-- Mobile Admin Link -->
-            <div class="mt-6 px-6 py-4 border-t border-gray-200">
-                <a href="admin/auth/login.php" class="block w-full bg-emerald-600 text-white rounded-lg px-6 py-3 font-semibold transition-all hover:bg-emerald-700 text-center">
-                    <i class="fas fa-lock mr-2"></i> Admin Login
                 </a>
             </div>
         </div>

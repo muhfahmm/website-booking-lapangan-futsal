@@ -153,10 +153,10 @@ if ($result_konten->num_rows > 0) {
     <nav class="sticky top-0 z-50 bg-transparent">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <!-- Logo -->
-            <div class="flex items-center gap-2">
+            <a href="index.php" class="flex items-center gap-2">
                 <i class="fas fa-futbol text-emerald-600 text-3xl"></i>
                 <span class="text-2xl font-bold text-slate-900">FutsalBook</span>
-            </div>
+            </a>
             
             <!-- Navigation Links (Desktop) -->
             <div class="hidden md:flex gap-8 items-center">
@@ -166,10 +166,8 @@ if ($result_konten->num_rows > 0) {
                 <a href="#kontak" class="text-slate-900 font-semibold hover:text-emerald-600 transition-all">Kontak</a>
             </div>
             
-            <!-- Admin Link -->
-            <a href="admin/auth/login.php" class="btn-primary hidden md:block">
-                <i class="fas fa-lock mr-2"></i> Admin
-            </a>
+            <!-- Space filler for alignment in place of admin button -->
+            <div class="hidden md:block w-[100px]"></div>
             
             <!-- Mobile Menu Toggle Button -->
             <button id="mobile-menu-btn" class="md:hidden text-2xl text-slate-900 cursor-pointer focus:outline-none">
@@ -200,13 +198,6 @@ if ($result_konten->num_rows > 0) {
                 </a>
                 <a href="#kontak" class="px-6 py-4 text-slate-900 font-semibold hover:bg-emerald-50 hover:text-emerald-600 border-b border-gray-100 transition-all" onclick="closeMobileMenu()">
                     <i class="fas fa-phone mr-3 text-emerald-600"></i>Kontak
-                </a>
-            </div>
-
-            <!-- Mobile Admin Link -->
-            <div class="mt-6 px-6 py-4 border-t border-gray-200">
-                <a href="admin/auth/login.php" class="block w-full btn-primary text-center">
-                    <i class="fas fa-lock mr-2"></i> Admin Login
                 </a>
             </div>
         </div>
@@ -592,22 +583,26 @@ if ($result_konten->num_rows > 0) {
         const mobileMenu = document.getElementById('mobile-menu');
         const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
 
-        // Open menu
-        mobileMenuBtn.addEventListener('click', function() {
-            mobileMenu.classList.add('open');
-            mobileMenuOverlay.classList.add('open');
-            document.body.style.overflow = 'hidden';
-        });
+        if (mobileMenuBtn && closeMenuBtn && mobileMenu && mobileMenuOverlay) {
+            // Open menu
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileMenu.classList.add('open');
+                mobileMenuOverlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            });
 
-        // Close menu
-        closeMenuBtn.addEventListener('click', closeMobileMenu);
-        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+            // Close menu
+            closeMenuBtn.addEventListener('click', closeMobileMenu);
+            mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+        }
 
         // Close menu function
         function closeMobileMenu() {
-            mobileMenu.classList.remove('open');
-            mobileMenuOverlay.classList.remove('open');
-            document.body.style.overflow = 'auto';
+            if (mobileMenu && mobileMenuOverlay) {
+                mobileMenu.classList.remove('open');
+                mobileMenuOverlay.classList.remove('open');
+                document.body.style.overflow = 'auto';
+            }
         }
 
         // Close menu when clicking on a link
@@ -627,32 +622,8 @@ if ($result_konten->num_rows > 0) {
 
         // Close menu when pressing Escape key
         document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' && mobileMenu.classList.contains('open')) {
+            if (event.key === 'Escape' && mobileMenu && mobileMenu.classList.contains('open')) {
                 closeMobileMenu();
-            }
-        });
-    </script>
-</body>
-</html>
-    </footer>
-
-    <!-- FLOATING WHATSAPP BUTTON -->
-    <a href="https://wa.me/6288983514206?text=Halo%20Admin%2C%20saya%20ingin%20menanyakan%20ketersediaan%20jadwal%20lapangan%20futsal%20untuk%20%5BTanggal%5D.%20Mohon%20informasinya%2C%20terima%20kasih." 
-       class="whatsapp-float" 
-       target="_blank" 
-       rel="noopener noreferrer"
-       title="Chat dengan kami di WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-
-    <!-- JavaScript untuk Navbar Scroll -->
-    <script>
-        const navbar = document.querySelector('nav');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 100) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
             }
         });
 
