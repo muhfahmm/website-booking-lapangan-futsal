@@ -370,10 +370,19 @@ while ($row = $result_related->fetch_assoc()) {
                 <!-- Harga Card -->
                 <div class="detail-section sticky top-24">
                     <!-- Date Selection for Dynamic Pricing -->
-                    <div class="mb-6">
-                        <label class="block text-gray-600 text-sm font-semibold mb-2">Pilih Tanggal (untuk melihat harga):</label>
-                        <input type="date" id="selectedDate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600" onchange="updatePricing()">
+                    <div class="mb-4">
+                        <label class="block text-gray-600 text-sm font-semibold mb-2">Pilih Tanggal Booking:</label>
+                        <input type="date" id="selectedDate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600" onchange="onDateChange()" min="<?php echo date('Y-m-d'); ?>">
                         <p id="dayType" class="text-sm text-gray-500 mt-2">Pilih tanggal terlebih dahulu</p>
+                    </div>
+
+                    <!-- Time Slot Selection -->
+                    <div class="mb-6">
+                        <label class="block text-gray-600 text-sm font-semibold mb-2">Pilih Jam Main:</label>
+                        <select id="selectedTime" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600" disabled>
+                            <option value="">Pilih tanggal terlebih dahulu</option>
+                        </select>
+                        <p id="timeStatus" class="text-sm text-red-500 mt-2"></p>
                     </div>
 
                     <hr class="border-gray-200 mb-6">
@@ -610,6 +619,77 @@ while ($row = $result_related->fetch_assoc()) {
             document.getElementById('currentPrice').innerHTML = `Rp ${selectedPrice.toLocaleString('id-ID')}`;
         }
 
+        // Check availability and populate time slots
+        function onDateChange() {
+            updatePricing();
+            
+            const dateInput = document.getElementById('selectedDate').value;
+            const timeSelect = document.getElementById('selectedTime');
+            const timeStatus = document.getElementById('timeStatus');
+            
+            if (!dateInput) {
+                timeSelect.disabled = true;
+                timeSelect.innerHTML = '<option value="">Pilih tanggal terlebih dahulu</option>';
+                return;
+            }
+            
+            timeStatus.textContent = 'Memeriksa ketersediaan jam...';
+            timeSelect.disabled = true;
+            
+            const lapanganId = <?php echo $lapangan_id; ?>;
+            
+            fetch(`booking/check_availability.php?lapangan_id=${lapanganId}&tanggal=${dateInput}`)
+                .then(res => res.json())
+                .then(bookedSlots => {
+                    timeStatus.textContent = '';
+                    timeSelect.disabled = false;
+                    timeSelect.innerHTML = '';
+                    
+                    // Generate 1-hour slots from 08:00 to 22:00
+                    const startHour = 8;
+                    const endHour = 22;
+                    
+                    let availableCount = 0;
+                    
+                    // Add default option
+                    const defaultOpt = document.createElement('option');
+                    defaultOpt.value = '';
+                    defaultOpt.textContent = '-- Pilih Jam --';
+                    timeSelect.appendChild(defaultOpt);
+                    
+                    for (let h = startHour; h < endHour; h++) {
+                        const startStr = String(h).padStart(2, '0') + ':00';
+                        const endStr = String(h + 1).padStart(2, '0') + ':00';
+                        const slotValue = `${startStr}-${endStr}`;
+                        
+                        // Check if this slot overlaps with any booked slot
+                        const isBooked = bookedSlots.some(booked => {
+                            return booked.start < endStr && booked.end > startStr;
+                        });
+                        
+                        const option = document.createElement('option');
+                        option.value = slotValue;
+                        if (isBooked) {
+                            option.disabled = true;
+                            option.textContent = `${startStr} - ${endStr} (Sudah Dipesan)`;
+                            option.className = 'text-gray-400 bg-gray-100';
+                        } else {
+                            option.textContent = `${startStr} - ${endStr} (Tersedia)`;
+                            availableCount++;
+                        }
+                        timeSelect.appendChild(option);
+                    }
+                    
+                    if (availableCount === 0) {
+                        timeStatus.textContent = 'Semua jam pada tanggal ini sudah dipesan.';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    timeStatus.textContent = 'Gagal memeriksa ketersediaan jam.';
+                });
+        }
+
         // Navbar scroll effect
         const navbar = document.querySelector('nav');
         window.addEventListener('scroll', function() {
@@ -623,6 +703,7 @@ while ($row = $result_related->fetch_assoc()) {
         function whatsappBooking() {
             const lapanganName = '<?php echo htmlspecialchars($lapangan['nama']); ?>';
             const dateInput = document.getElementById('selectedDate').value;
+            const timeSelect = document.getElementById('selectedTime').value;
             
             let message;
             if (dateInput) {
@@ -633,7 +714,12 @@ while ($row = $result_related->fetch_assoc()) {
                     day: 'numeric' 
                 });
                 const formattedDate = dateFormatter.format(date);
-                message = `Halo Admin, saya tertarik booking ${lapanganName} untuk tanggal ${formattedDate}. Mohon informasi ketersediaan jam bermainnya. Terima kasih.`;
+                
+                if (timeSelect) {
+                    message = `Halo Admin, saya tertarik booking ${lapanganName} untuk tanggal ${formattedDate} jam ${timeSelect}. Mohon informasi konfirmasinya. Terima kasih.`;
+                } else {
+                    message = `Halo Admin, saya tertarik booking ${lapanganName} untuk tanggal ${formattedDate}. Mohon informasi ketersediaan jam bermainnya. Terima kasih.`;
+                }
             } else {
                 message = `Halo Admin, saya tertarik booking ${lapanganName}. Mohon informasi ketersediaan dan harganya. Terima kasih.`;
             }
@@ -645,14 +731,23 @@ while ($row = $result_related->fetch_assoc()) {
         // Function untuk membuka form booking
         function openBookingForm() {
             const selectedDate = document.getElementById('selectedDate').value;
+            const selectedTime = document.getElementById('selectedTime').value;
             
             if (!selectedDate) {
                 alert('Silakan pilih tanggal terlebih dahulu');
                 return;
             }
+            if (!selectedTime) {
+                alert('Silakan pilih jam main terlebih dahulu');
+                return;
+            }
+
+            const times = selectedTime.split('-');
+            const jamMulai = times[0];
+            const jamSelesai = times[1];
 
             // Redirect ke booking checkout dengan parameter
-            window.location.href = `booking/checkout.php?lapangan_id=<?php echo $lapangan_id; ?>&tanggal=${selectedDate}&jam_mulai=09:00&jam_selesai=10:00`;
+            window.location.href = `booking/checkout.php?lapangan_id=<?php echo $lapangan_id; ?>&tanggal=${selectedDate}&jam_mulai=${jamMulai}&jam_selesai=${jamSelesai}`;
         }
 
         // Mobile Menu Functions
