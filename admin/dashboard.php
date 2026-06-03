@@ -7,6 +7,21 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     exit();
 }
 
+$admin_name = 'Admin';
+if (isset($_SESSION['admin_id']) && isset($conn)) {
+    $admin_id = (int)$_SESSION['admin_id'];
+    $stmt_admin = $conn->prepare('SELECT username FROM tb_admin WHERE id = ?');
+    if ($stmt_admin) {
+        $stmt_admin->bind_param('i', $admin_id);
+        $stmt_admin->execute();
+        $stmt_admin->bind_result($username_db);
+        if ($stmt_admin->fetch()) {
+            $admin_name = $username_db;
+        }
+        $stmt_admin->close();
+    }
+}
+
 // Get data counts
 $lapangan_count = 0;
 $booking_count = 0;
@@ -44,9 +59,16 @@ if (isset($conn)) {
     <main class="min-h-screen">
         <!-- Header -->
         <div class="bg-white border-b border-gray-200 p-4 md:p-8">
-            <div class="max-w-7xl mx-auto">
-                <h1 class="text-2xl md:text-4xl font-bold text-slate-900">Dashboard</h1>
-                <p class="text-gray-600 mt-1">Selamat datang di Admin Panel</p>
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-4xl font-bold text-slate-900">Dashboard</h1>
+                    <p class="text-gray-600 mt-1">Selamat datang di Admin Panel</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="bg-emerald-100 text-emerald-800 text-sm font-semibold px-4 py-2 rounded-full">
+                        halo <span class="font-bold"><?php echo htmlspecialchars($admin_name); ?></span>
+                    </span>
+                </div>
             </div>
         </div>
 

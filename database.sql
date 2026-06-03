@@ -17,7 +17,6 @@ CREATE TABLE tb_lapangan (
     deskripsi TEXT DEFAULT NULL,
     deskripsi_lengkap TEXT DEFAULT NULL,
     fasilitas TEXT DEFAULT NULL,
-    rating DECIMAL(3,2) DEFAULT 4.5,
     lokasi VARCHAR(150) DEFAULT 'Jakarta',
     ukuran VARCHAR(50) DEFAULT '40m x 20m',
     pencahayaan VARCHAR(100) DEFAULT 'Standar',
@@ -105,7 +104,7 @@ INSERT INTO tb_payment_methods (name, code) VALUES
 ('BNPL', 'bnpl');
 
 -- Sample Data
-INSERT INTO tb_lapangan (nama, harga, harga_weekend, status, gambar, deskripsi, deskripsi_lengkap, fasilitas, rating, lokasi, ukuran, pencahayaan, parkir, tipe_lantai) VALUES 
+INSERT INTO tb_lapangan (nama, harga, harga_weekend, status, gambar, deskripsi, deskripsi_lengkap, fasilitas, lokasi, ukuran, pencahayaan, parkir, tipe_lantai) VALUES 
 (
     'Lapangan A', 
     100000,
@@ -115,7 +114,6 @@ INSERT INTO tb_lapangan (nama, harga, harga_weekend, status, gambar, deskripsi, 
     'Lapangan indoor dengan pencahayaan standar dan fasilitas lengkap', 
     'Lapangan A adalah lapangan futsal indoor premium yang berlokasi di Jakarta Barat. Dengan ukuran standar internasional dan dilengkapi pencahayaan LED modern, lapangan ini menawarkan kenyamanan bermain yang optimal. Cocok untuk pertandingan resmi maupun latihan rutin.',
     'AC Central, Toilet & Kamar Mandi, Ruang Tunggu Nyaman, Penyewaan Perlengkapan, Kantin & Minuman, Tempat Parkir Luas, Keamanan 24 Jam',
-    4.86, 
     'Jakarta Barat',
     '40m x 20m',
     'LED Modern',
@@ -131,7 +129,6 @@ INSERT INTO tb_lapangan (nama, harga, harga_weekend, status, gambar, deskripsi, 
     'Lapangan outdoor berkualitas internasional dengan rumput sintetis', 
     'Lapangan B adalah lapangan futsal outdoor terbesar dan tercanggih dengan standar internasional. Dilengkapi rumput sintetis berkualitas tinggi dan sistem drainase modern, lapangan ini siap untuk berbagai jenis pertandingan. Lokasi strategis di Jakarta Timur memudahkan akses dari berbagai area.',
     'Sistem Pencahayaan Profesional, Tribun Penonton, Kantor Pengelola, Area Istirahat Ber-AC, Toilet Bersih, Fasilitas Olahraga Lengkap, Parkir Bertingkat',
-    4.65, 
     'Jakarta Timur',
     '45m x 25m',
     'Profesional High-Mast',
@@ -147,7 +144,6 @@ INSERT INTO tb_lapangan (nama, harga, harga_weekend, status, gambar, deskripsi, 
     'Lapangan indoor dengan AC dan fasilitas premium', 
     'Lapangan C menawarkan pengalaman bermain futsal yang nyaman dengan ber-AC penuh. Lapangan ini ideal untuk casual games maupun turnamen skala kecil. Harga yang kompetitif menjadikan lapangan ini pilihan utama untuk grup yang mencari value terbaik.',
     'AC Pendingin Optimal, Kamar Ganti Bersih, Penyewaan Bola & Sepatu, Snack Bar, WiFi Gratis, Parkir Aman, Staff Profesional',
-    4.75, 
     'Jakarta Pusat',
     '35m x 18m',
     'Standar Plus',

@@ -305,12 +305,10 @@ if ($result_konten->num_rows > 0) {
                                         <i class="fas fa-car text-emerald-600 w-5"></i>
                                         <span class="text-sm">Parkir: Tersedia</span>
                                     </div>
-                                    <?php if ($lapangan['rating']): ?>
-                                        <div class="flex items-center gap-3 text-gray-700">
-                                            <i class="fas fa-star text-yellow-400 w-5"></i>
-                                            <span class="text-sm"><?php echo $lapangan['rating']; ?> - <?php echo htmlspecialchars($lapangan['lokasi']); ?></span>
-                                        </div>
-                                    <?php endif; ?>
+                                    <div class="flex items-center gap-3 text-gray-700">
+                                        <i class="fas fa-map-marker-alt text-emerald-600 w-5"></i>
+                                        <span class="text-sm"><?php echo htmlspecialchars($lapangan['lokasi']); ?></span>
+                                    </div>
                                 </div>
 
                             <!-- CTA Button -->

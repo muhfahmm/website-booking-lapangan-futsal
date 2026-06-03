@@ -104,10 +104,7 @@ while ($row = $result_related->fetch_assoc()) {
             @apply bg-red-100 text-red-800;
         }
         
-        .rating-star {
-            @apply text-yellow-400;
-        }
-        
+
         .whatsapp-float {
             position: fixed;
             bottom: 30px;
@@ -298,10 +295,7 @@ while ($row = $result_related->fetch_assoc()) {
                                     </span>';
                             }
                         ?>
-                        <div class="flex items-center gap-1">
-                            <i class="fas fa-star rating-star"></i>
-                            <span class="font-semibold text-slate-900"><?php echo $lapangan['rating']; ?></span>
-                        </div>
+
                         <span class="text-gray-600">
                             <i class="fas fa-map-marker-alt text-emerald-600 mr-2"></i><?php echo htmlspecialchars($lapangan['lokasi']); ?>
                         </span>
@@ -457,8 +451,7 @@ while ($row = $result_related->fetch_assoc()) {
                             <div class="p-4">
                                 <h3 class="text-xl font-bold text-slate-900 mb-2"><?php echo htmlspecialchars($related['nama']); ?></h3>
                                 <p class="text-emerald-600 font-bold text-lg mb-3">Rp <?php echo number_format($related['harga'], 0, ',', '.'); ?>/jam</p>
-                                <div class="flex items-center justify-between text-sm text-gray-600">
-                                    <span><i class="fas fa-star text-yellow-400 mr-1"></i><?php echo $related['rating']; ?></span>
+                                <div class="flex items-center text-sm text-gray-600">
                                     <span><i class="fas fa-map-marker-alt text-emerald-600 mr-1"></i><?php echo htmlspecialchars($related['lokasi']); ?></span>
                                 </div>
                             </div>

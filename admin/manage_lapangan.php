@@ -25,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $deskripsi = $conn->real_escape_string($_POST['deskripsi']);
     $deskripsi_lengkap = $conn->real_escape_string($_POST['deskripsi_lengkap']);
     $fasilitas = $conn->real_escape_string($_POST['fasilitas']);
-    $rating = (float)$_POST['rating'];
     $lokasi = $conn->real_escape_string($_POST['lokasi']);
     $ukuran = $conn->real_escape_string($_POST['ukuran']);
     $pencahayaan = $conn->real_escape_string($_POST['pencahayaan']);
@@ -55,14 +54,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = (int)$_POST['id'];
         $lapangan_id = $id;
         if ($gambar) {
-            $sql = "UPDATE tb_lapangan SET nama='$nama', harga=$harga, harga_weekend=$harga_weekend, status='$status', deskripsi='$deskripsi', deskripsi_lengkap='$deskripsi_lengkap', fasilitas='$fasilitas', rating=$rating, lokasi='$lokasi', ukuran='$ukuran', pencahayaan='$pencahayaan', parkir='$parkir', tipe_lantai='$tipe_lantai', gambar='$gambar' WHERE id=$id";
+            $sql = "UPDATE tb_lapangan SET nama='$nama', harga=$harga, harga_weekend=$harga_weekend, status='$status', deskripsi='$deskripsi', deskripsi_lengkap='$deskripsi_lengkap', fasilitas='$fasilitas', lokasi='$lokasi', ukuran='$ukuran', pencahayaan='$pencahayaan', parkir='$parkir', tipe_lantai='$tipe_lantai', gambar='$gambar' WHERE id=$id";
         } else {
-            $sql = "UPDATE tb_lapangan SET nama='$nama', harga=$harga, harga_weekend=$harga_weekend, status='$status', deskripsi='$deskripsi', deskripsi_lengkap='$deskripsi_lengkap', fasilitas='$fasilitas', rating=$rating, lokasi='$lokasi', ukuran='$ukuran', pencahayaan='$pencahayaan', parkir='$parkir', tipe_lantai='$tipe_lantai' WHERE id=$id";
+            $sql = "UPDATE tb_lapangan SET nama='$nama', harga=$harga, harga_weekend=$harga_weekend, status='$status', deskripsi='$deskripsi', deskripsi_lengkap='$deskripsi_lengkap', fasilitas='$fasilitas', lokasi='$lokasi', ukuran='$ukuran', pencahayaan='$pencahayaan', parkir='$parkir', tipe_lantai='$tipe_lantai' WHERE id=$id";
         }
         $conn->query($sql);
     } else {
         // Add new
-        $sql = "INSERT INTO tb_lapangan (nama, harga, harga_weekend, status, deskripsi, deskripsi_lengkap, fasilitas, rating, lokasi, ukuran, pencahayaan, parkir, tipe_lantai, gambar) VALUES ('$nama', $harga, $harga_weekend, '$status', '$deskripsi', '$deskripsi_lengkap', '$fasilitas', $rating, '$lokasi', '$ukuran', '$pencahayaan', '$parkir', '$tipe_lantai', '$gambar')";
+        $sql = "INSERT INTO tb_lapangan (nama, harga, harga_weekend, status, deskripsi, deskripsi_lengkap, fasilitas, lokasi, ukuran, pencahayaan, parkir, tipe_lantai, gambar) VALUES ('$nama', $harga, $harga_weekend, '$status', '$deskripsi', '$deskripsi_lengkap', '$fasilitas', '$lokasi', '$ukuran', '$pencahayaan', '$parkir', '$tipe_lantai', '$gambar')";
         $conn->query($sql);
         $lapangan_id = $conn->insert_id;
     }
@@ -174,9 +173,6 @@ if (isset($_GET['edit'])) {
                                 <h3 class="text-lg md:text-xl font-bold text-slate-900 mb-2"><?php echo htmlspecialchars($lapangan['nama']); ?></h3>
                                 
                                 <div class="flex items-center gap-2 text-sm text-gray-600 mb-3">
-                                    <i class="fas fa-star text-yellow-400"></i>
-                                    <span><?php echo $lapangan['rating']; ?></span>
-                                    <span class="text-gray-400">•</span>
                                     <i class="fas fa-map-marker-alt text-emerald-600"></i>
                                     <span><?php echo htmlspecialchars($lapangan['lokasi']); ?></span>
                                 </div>
@@ -246,17 +242,13 @@ if (isset($_GET['edit'])) {
                     </div>
 
                     <!-- Row 3 -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4">
                         <div>
                             <label class="block text-gray-700 font-semibold mb-2">Status</label>
                             <select id="status" name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">
                                 <option value="tersedia">Tersedia</option>
                                 <option value="maintenance">Maintenance</option>
                             </select>
-                        </div>
-                        <div>
-                            <label class="block text-gray-700 font-semibold mb-2">Rating (0-5)</label>
-                            <input type="number" id="rating" name="rating" min="0" max="5" step="0.1" value="4.5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600">
                         </div>
                     </div>
 
@@ -357,7 +349,6 @@ if (isset($_GET['edit'])) {
                     document.getElementById('deskripsi').value = data.deskripsi || '';
                     document.getElementById('deskripsi_lengkap').value = data.deskripsi_lengkap || '';
                     document.getElementById('fasilitas').value = data.fasilitas || '';
-                    document.getElementById('rating').value = data.rating || 4.5;
                     document.getElementById('lokasi').value = data.lokasi || 'Jakarta';
                     document.getElementById('ukuran').value = data.ukuran || '40m x 20m';
                     document.getElementById('pencahayaan').value = data.pencahayaan || 'Standar';

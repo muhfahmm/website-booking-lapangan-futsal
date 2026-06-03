@@ -20,7 +20,6 @@ $sample_data = [
         'deskripsi' => 'Lapangan indoor dengan pencahayaan standar dan fasilitas lengkap',
         'deskripsi_lengkap' => 'Lapangan A adalah lapangan futsal indoor premium yang berlokasi di Jakarta Barat. Dengan ukuran standar internasional dan dilengkapi pencahayaan LED modern, lapangan ini menawarkan kenyamanan bermain yang optimal. Cocok untuk pertandingan resmi maupun latihan rutin.',
         'fasilitas' => 'AC Central, Toilet & Kamar Mandi, Ruang Tunggu Nyaman, Penyewaan Perlengkapan, Kantin & Minuman, Tempat Parkir Luas, Keamanan 24 Jam',
-        'rating' => 4.86,
         'lokasi' => 'Jakarta Barat',
         'ukuran' => '40m x 20m',
         'pencahayaan' => 'LED Modern',
@@ -36,7 +35,6 @@ $sample_data = [
         'deskripsi' => 'Lapangan outdoor berkualitas internasional dengan rumput sintetis',
         'deskripsi_lengkap' => 'Lapangan B adalah lapangan futsal outdoor terbesar dan tercanggih dengan standar internasional. Dilengkapi rumput sintetis berkualitas tinggi dan sistem drainase modern, lapangan ini siap untuk berbagai jenis pertandingan. Lokasi strategis di Jakarta Timur memudahkan akses dari berbagai area.',
         'fasilitas' => 'Sistem Pencahayaan Profesional, Tribun Penonton, Kantor Pengelola, Area Istirahat Ber-AC, Toilet Bersih, Fasilitas Olahraga Lengkap, Parkir Bertingkat',
-        'rating' => 4.65,
         'lokasi' => 'Jakarta Timur',
         'ukuran' => '45m x 25m',
         'pencahayaan' => 'Profesional High-Mast',
@@ -52,7 +50,6 @@ $sample_data = [
         'deskripsi' => 'Lapangan indoor dengan AC dan fasilitas premium',
         'deskripsi_lengkap' => 'Lapangan C menawarkan pengalaman bermain futsal yang nyaman dengan ber-AC penuh. Lapangan ini ideal untuk casual games maupun turnamen skala kecil. Harga yang kompetitif menjadikan lapangan ini pilihan utama untuk grup yang mencari value terbaik.',
         'fasilitas' => 'AC Pendingin Optimal, Kamar Ganti Bersih, Penyewaan Bola & Sepatu, Snack Bar, WiFi Gratis, Parkir Aman, Staff Profesional',
-        'rating' => 4.75,
         'lokasi' => 'Jakarta Pusat',
         'ukuran' => '35m x 18m',
         'pencahayaan' => 'Standar Plus',
@@ -72,7 +69,6 @@ foreach ($sample_data as $data) {
     $deskripsi = $conn->real_escape_string($data['deskripsi']);
     $deskripsi_lengkap = $conn->real_escape_string($data['deskripsi_lengkap']);
     $fasilitas = $conn->real_escape_string($data['fasilitas']);
-    $rating = (float)$data['rating'];
     $lokasi = $conn->real_escape_string($data['lokasi']);
     $ukuran = $conn->real_escape_string($data['ukuran']);
     $pencahayaan = $conn->real_escape_string($data['pencahayaan']);
@@ -81,9 +77,9 @@ foreach ($sample_data as $data) {
     $gambar = $conn->real_escape_string($data['gambar']);
     
     $sql = "INSERT INTO tb_lapangan 
-            (nama, harga, harga_weekend, status, deskripsi, deskripsi_lengkap, fasilitas, rating, lokasi, ukuran, pencahayaan, parkir, tipe_lantai, gambar) 
+            (nama, harga, harga_weekend, status, deskripsi, deskripsi_lengkap, fasilitas, lokasi, ukuran, pencahayaan, parkir, tipe_lantai, gambar) 
             VALUES 
-            ('$nama', $harga, $harga_weekend, '$status', '$deskripsi', '$deskripsi_lengkap', '$fasilitas', $rating, '$lokasi', '$ukuran', '$pencahayaan', '$parkir', '$tipe_lantai', '$gambar')";
+            ('$nama', $harga, $harga_weekend, '$status', '$deskripsi', '$deskripsi_lengkap', '$fasilitas', '$lokasi', '$ukuran', '$pencahayaan', '$parkir', '$tipe_lantai', '$gambar')";
     
     if ($conn->query($sql)) {
         $inserted++;
@@ -136,7 +132,7 @@ foreach ($sample_data as $data) {
                 <li>3 gambar gallery</li>
                 <li>Deskripsi lengkap</li>
                 <li>Fasilitas yang detail</li>
-                <li>Rating & lokasi</li>
+                <li>Lokasi</li>
             </ul>
 
             <p><strong>Langkah berikutnya:</strong></p>
