@@ -15,13 +15,6 @@ if ($result_lapangan->num_rows > 0) {
     }
 }
 
-// Ambil data konten untuk hero section
-$query_konten = "SELECT * FROM tb_konten WHERE tipe = 'panduan' LIMIT 1";
-$result_konten = $conn->query($query_konten);
-$konten_hero = null;
-if ($result_konten->num_rows > 0) {
-    $konten_hero = $result_konten->fetch_assoc();
-}
 ?>
 
 <!DOCTYPE html>
