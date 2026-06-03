@@ -53,6 +53,10 @@ while ($row = $result_related->fetch_assoc()) {
         * {
             scroll-behavior: smooth;
         }
+
+        body {
+            touch-action: manipulation;
+        }
         
         nav {
             transition: all 0.3s ease-in-out;
@@ -69,11 +73,6 @@ while ($row = $result_related->fetch_assoc()) {
 
         #mobile-menu.open {
             transform: translateX(0);
-        }
-
-        #mobile-menu-overlay.open {
-            opacity: 0.5;
-            visibility: visible;
         }
         
         .gallery-image {
@@ -138,6 +137,19 @@ while ($row = $result_related->fetch_assoc()) {
             50% {
                 transform: translateY(-10px);
             }
+        }
+
+        #mobile-menu-overlay {
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            touch-action: auto;
+        }
+
+        #mobile-menu-overlay.open {
+            opacity: 0.5;
+            visibility: visible;
+            pointer-events: auto;
         }
         
         @media (max-width: 640px) {

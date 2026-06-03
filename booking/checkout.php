@@ -66,32 +66,85 @@ $is_weekend_text = $is_weekend ? 'Weekend' : 'Weekday';
         ? 'https://app.midtrans.com/snap/snap.js'
         : 'https://app.sandbox.midtrans.com/snap/snap.js'; ?>"
         data-client-key="<?php echo MIDTRANS_CLIENT_KEY; ?>"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .badge-weekend {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+
+        .badge-weekday {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+        }
+
+        .price-box {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .input-field {
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .facility-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            transition: all 0.2s ease;
+        }
+
+        .facility-item:hover {
+            padding-left: 5px;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
-    <div class="min-h-screen py-8">
-        <div class="max-w-2xl mx-auto px-4">
-            <div class="mb-6">
-                <a href="../index.php" class="text-emerald-600 hover:text-emerald-700 flex items-center">
-                    <i class="fas fa-arrow-left mr-2"></i> Kembali
+<body class="py-8 md:py-12">
+    <div class="min-h-screen">
+        <div class="max-w-6xl mx-auto px-4">
+            <!-- Back Button -->
+            <div class="mb-8">
+                <a href="../index.php" class="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold transition">
+                    <i class="fas fa-arrow-left"></i> Kembali ke Beranda
                 </a>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-6">
+            <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
                 <!-- Checkout Form -->
                 <div class="md:col-span-2">
-                    <div class="bg-white rounded-lg shadow-md p-6">
-                        <h1 class="text-2xl font-bold text-slate-900 mb-6">Checkout Booking</h1>
+                    <div class="card-shadow bg-white rounded-2xl p-8">
+                        <div class="mb-8">
+                            <h1 class="text-4xl font-bold text-slate-900">Checkout Booking</h1>
+                            <p class="text-gray-600 mt-2">Lengkapi data Anda untuk menyelesaikan pemesanan</p>
+                        </div>
 
-                        <form id="checkout-form" class="space-y-4">
+                        <form id="checkout-form" class="space-y-6">
                             <input type="hidden" id="lapangan_id" value="<?php echo $lapangan_id; ?>">
                             <input type="hidden" id="tanggal" value="<?php echo $tanggal; ?>">
                             <input type="hidden" id="jam_mulai" value="<?php echo $jam_mulai; ?>">
                             <input type="hidden" id="jam_selesai" value="<?php echo $jam_selesai; ?>">
 
                             <!-- Nama Pemesan -->
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-900 mb-2">
-                                    <i class="fas fa-user mr-2 text-emerald-600"></i> Nama Pemesan
+                            <div class="group">
+                                <label class="block text-sm font-bold text-slate-900 mb-3">
+                                    <span class="inline-flex items-center gap-2 text-emerald-600">
+                                        <i class="fas fa-user text-lg"></i> Nama Pemesan
+                                    </span>
                                 </label>
                                 <input 
                                     type="text" 
@@ -99,15 +152,17 @@ $is_weekend_text = $is_weekend ? 'Weekend' : 'Weekday';
                                     name="nama_pemesan" 
                                     required
                                     placeholder="Masukkan nama lengkap Anda"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                    class="input-field w-full px-5 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition"
                                 >
-                                <small class="text-gray-500">Nama yang akan muncul di booking</small>
+                                <small class="text-gray-500 mt-1 block">Nama yang akan muncul di booking Anda</small>
                             </div>
 
                             <!-- No. HP -->
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-900 mb-2">
-                                    <i class="fas fa-phone mr-2 text-emerald-600"></i> Nomor HP
+                            <div class="group">
+                                <label class="block text-sm font-bold text-slate-900 mb-3">
+                                    <span class="inline-flex items-center gap-2 text-emerald-600">
+                                        <i class="fas fa-phone text-lg"></i> Nomor HP
+                                    </span>
                                 </label>
                                 <input 
                                     type="tel" 
@@ -116,15 +171,17 @@ $is_weekend_text = $is_weekend ? 'Weekend' : 'Weekday';
                                     required
                                     placeholder="08123456789"
                                     pattern="^[0-9+\-\s]+$"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                    class="input-field w-full px-5 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition"
                                 >
-                                <small class="text-gray-500">Nomor WhatsApp/Telepon yang aktif</small>
+                                <small class="text-gray-500 mt-1 block">Nomor WhatsApp/Telepon yang aktif untuk konfirmasi</small>
                             </div>
 
                             <!-- Email -->
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-900 mb-2">
-                                    <i class="fas fa-envelope mr-2 text-emerald-600"></i> Email
+                            <div class="group">
+                                <label class="block text-sm font-bold text-slate-900 mb-3">
+                                    <span class="inline-flex items-center gap-2 text-emerald-600">
+                                        <i class="fas fa-envelope text-lg"></i> Email
+                                    </span>
                                 </label>
                                 <input 
                                     type="email" 
@@ -132,120 +189,129 @@ $is_weekend_text = $is_weekend ? 'Weekend' : 'Weekday';
                                     name="email" 
                                     required
                                     placeholder="nama@example.com"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                    class="input-field w-full px-5 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition"
                                 >
-                                <small class="text-gray-500">Email untuk konfirmasi booking</small>
+                                <small class="text-gray-500 mt-1 block">Email untuk konfirmasi dan invoice booking</small>
                             </div>
 
                             <!-- Catatan Khusus -->
-                            <div>
-                                <label class="block text-sm font-semibold text-slate-900 mb-2">
-                                    <i class="fas fa-sticky-note mr-2 text-emerald-600"></i> Catatan (Opsional)
+                            <div class="group">
+                                <label class="block text-sm font-bold text-slate-900 mb-3">
+                                    <span class="inline-flex items-center gap-2 text-emerald-600">
+                                        <i class="fas fa-sticky-note text-lg"></i> Catatan (Opsional)
+                                    </span>
                                 </label>
                                 <textarea 
                                     id="notes" 
                                     name="notes" 
-                                    rows="3"
-                                    placeholder="Contoh: Butuh kursi tambahan, peralatan khusus, dll"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                    rows="4"
+                                    placeholder="Contoh: Butuh kursi tambahan, peralatan khusus, kebutuhan khusus lainnya, dll"
+                                    class="input-field w-full px-5 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition resize-none"
                                 ></textarea>
                             </div>
 
                             <!-- T&C -->
-                            <div class="flex items-start">
-                                <input 
-                                    type="checkbox" 
-                                    id="agree_tc" 
-                                    name="agree_tc" 
-                                    required
-                                    class="mt-1 w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"
-                                >
-                                <label for="agree_tc" class="ml-2 text-sm text-gray-600">
-                                    Saya setuju dengan <a href="#" class="text-emerald-600 hover:underline">Syarat & Ketentuan</a> dan <a href="#" class="text-emerald-600 hover:underline">Kebijakan Privasi</a>
-                                </label>
+                            <div class="bg-emerald-50 border-l-4 border-emerald-500 rounded-xl p-4 my-6">
+                                <div class="flex items-start gap-3">
+                                    <input 
+                                        type="checkbox" 
+                                        id="agree_tc" 
+                                        name="agree_tc" 
+                                        required
+                                        class="mt-1 w-5 h-5 text-emerald-600 rounded cursor-pointer"
+                                    >
+                                    <label for="agree_tc" class="text-sm text-gray-700 cursor-pointer">
+                                        Saya setuju dengan <a href="#" class="text-emerald-600 font-semibold hover:underline">Syarat & Ketentuan</a> dan <a href="#" class="text-emerald-600 font-semibold hover:underline">Kebijakan Privasi</a> serta memahami bahwa pembayaran bersifat non-refundable
+                                    </label>
+                                </div>
                             </div>
 
                             <!-- Submit Button -->
                             <button 
                                 type="submit" 
                                 id="submit-btn"
-                                class="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-all flex items-center justify-center"
+                                class="w-full price-box text-white py-4 rounded-xl font-bold hover:shadow-lg transform hover:scale-105 transition-all flex items-center justify-center gap-2 text-lg"
                             >
-                                <i class="fas fa-lock mr-2"></i> Lanjut ke Pembayaran
+                                <i class="fas fa-lock"></i> Lanjut ke Pembayaran
                             </button>
                         </form>
 
                         <!-- Loading Spinner -->
-                        <div id="loading" class="hidden text-center py-4">
-                            <div class="inline-block animate-spin">
-                                <i class="fas fa-spinner text-emerald-600 text-2xl"></i>
+                        <div id="loading" class="hidden text-center py-8">
+                            <div class="inline-block animate-spin mb-4">
+                                <i class="fas fa-spinner text-emerald-600 text-4xl"></i>
                             </div>
-                            <p class="mt-2 text-gray-600">Memproses booking Anda...</p>
+                            <p class="mt-3 text-gray-600 font-semibold">Memproses booking Anda...</p>
+                            <p class="text-sm text-gray-500 mt-2">Jangan tutup halaman ini</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Booking Summary -->
                 <div class="md:col-span-1">
-                    <div class="bg-white rounded-lg shadow-md p-6 sticky top-8">
-                        <h2 class="font-bold text-slate-900 mb-4">Ringkasan Booking</h2>
+                    <div class="card-shadow bg-white rounded-2xl p-8 sticky top-8">
+                        <h2 class="text-2xl font-bold text-slate-900 mb-6">Ringkasan Booking</h2>
 
                         <!-- Lapangan -->
-                        <div class="mb-4 pb-4 border-b border-gray-200">
-                            <p class="text-xs text-gray-600 uppercase tracking-wide">Lapangan</p>
-                            <p class="font-bold text-slate-900"><?php echo htmlspecialchars($lapangan['nama']); ?></p>
-                            <p class="text-sm text-gray-600 mt-1"><?php echo htmlspecialchars($lapangan['lokasi']); ?></p>
+                        <div class="mb-6 pb-6 border-b-2 border-gray-100">
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">📍 Lapangan</p>
+                            <p class="text-xl font-bold text-slate-900"><?php echo htmlspecialchars($lapangan['nama']); ?></p>
+                            <p class="text-sm text-gray-600 mt-2"><?php echo htmlspecialchars($lapangan['lokasi']); ?></p>
                         </div>
 
                         <!-- Tanggal & Jam -->
-                        <div class="mb-4 pb-4 border-b border-gray-200">
-                            <p class="text-xs text-gray-600 uppercase tracking-wide">Tanggal</p>
-                            <p class="font-bold text-slate-900"><?php echo $tanggal_display; ?></p>
-                            <p class="text-sm text-gray-600 mt-1"><?php echo $jam_mulai . ' - ' . $jam_selesai; ?></p>
-                            <p class="text-xs text-emerald-600 mt-1"><strong><?php echo $is_weekend_text; ?></strong></p>
+                        <div class="mb-6 pb-6 border-b-2 border-gray-100">
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">📅 Tanggal & Waktu</p>
+                            <p class="text-lg font-bold text-slate-900"><?php echo $tanggal_display; ?></p>
+                            <p class="text-emerald-600 font-semibold mt-2 flex items-center gap-2">
+                                <i class="fas fa-clock"></i> <?php echo $jam_mulai . ' - ' . $jam_selesai; ?>
+                            </p>
+                            <div class="mt-3">
+                                <span class="<?php echo $is_weekend ? 'badge-weekend' : 'badge-weekday'; ?> text-white text-xs font-bold px-3 py-1 rounded-full inline-block">
+                                    <?php echo $is_weekend_text; ?>
+                                </span>
+                            </div>
                         </div>
 
                         <!-- Durasi -->
-                        <div class="mb-4 pb-4 border-b border-gray-200">
-                            <p class="text-xs text-gray-600 uppercase tracking-wide">Durasi</p>
-                            <p class="font-bold text-slate-900"><?php echo number_format($hours, 1); ?> jam</p>
+                        <div class="mb-6 pb-6 border-b-2 border-gray-100">
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">⏱️ Durasi</p>
+                            <p class="text-2xl font-bold text-emerald-600"><?php echo number_format($hours, 1); ?> Jam</p>
                         </div>
 
                         <!-- Harga Breakdown -->
-                        <div class="mb-4 pb-4 border-b border-gray-200">
-                            <div class="flex justify-between text-sm mb-2">
-                                <span class="text-gray-600">Harga per jam</span>
-                                <span class="font-semibold">Rp <?php echo number_format($hourly_price, 0, ',', '.'); ?></span>
-                            </div>
-                            <div class="flex justify-between text-sm mb-2">
-                                <span class="text-gray-600">Jumlah jam</span>
-                                <span class="font-semibold"><?php echo number_format($hours, 1); ?> x</span>
+                        <div class="mb-6 pb-6 border-b-2 border-gray-100 space-y-3">
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">💰 Detail Harga</p>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-700">Harga per jam</span>
+                                <span class="font-semibold text-slate-900">Rp <?php echo number_format($hourly_price, 0, ',', '.'); ?></span>
                             </div>
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Biaya Admin</span>
-                                <span class="font-semibold">Rp 0</span>
+                                <span class="text-gray-700">Jumlah jam</span>
+                                <span class="font-semibold text-slate-900">× <?php echo number_format($hours, 1); ?></span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-700">Biaya Admin</span>
+                                <span class="font-semibold text-slate-900">Rp 0</span>
                             </div>
                         </div>
 
                         <!-- Total -->
-                        <div class="bg-emerald-50 rounded-lg p-4">
-                            <div class="flex justify-between items-baseline">
-                                <span class="text-gray-700">Total Pembayaran</span>
-                                <span class="text-3xl font-bold text-emerald-600">Rp</span>
-                            </div>
-                            <p class="text-2xl font-bold text-emerald-600 text-right">
-                                <?php echo number_format($total_harga, 0, ',', '.'); ?>
+                        <div class="price-box rounded-2xl p-6 mb-6">
+                            <p class="text-white text-sm font-semibold uppercase tracking-wider mb-2">Total Pembayaran</p>
+                            <p class="text-4xl font-black text-white">
+                                Rp <?php echo number_format($total_harga, 0, ',', '.'); ?>
                             </p>
                         </div>
 
                         <!-- Fasilitas -->
-                        <div class="mt-6 pt-6 border-t border-gray-200">
-                            <p class="text-xs text-gray-600 uppercase tracking-wide mb-3">Fasilitas</p>
-                            <div class="space-y-2 text-sm">
+                        <div class="bg-gray-50 rounded-xl p-5">
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">✨ Fasilitas Tersedia</p>
+                            <div class="space-y-2">
                                 <?php
                                 $fasilitas = explode(',', $lapangan['fasilitas']);
-                                foreach(array_slice($fasilitas, 0, 4) as $f) {
-                                    echo '<div class="flex items-start"><i class="fas fa-check text-emerald-600 mr-2 mt-0.5 flex-shrink-0"></i><span class="text-gray-600">' . htmlspecialchars(trim($f)) . '</span></div>';
+                                foreach(array_slice($fasilitas, 0, 5) as $f) {
+                                    echo '<div class="facility-item"><i class="fas fa-check-circle text-emerald-500 mr-3 flex-shrink-0"></i><span class="text-sm text-gray-700">' . htmlspecialchars(trim($f)) . '</span></div>';
                                 }
                                 ?>
                             </div>
@@ -335,4 +401,3 @@ $is_weekend_text = $is_weekend ? 'Weekend' : 'Weekday';
     </script>
 </body>
 </html>
-

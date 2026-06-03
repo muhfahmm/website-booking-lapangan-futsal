@@ -28,6 +28,7 @@ if ($result_lapangan->num_rows > 0) {
     <style>
         * {
             scroll-behavior: smooth;
+            touch-action: auto;
         }
         
         /* Navbar fixed styling */
@@ -45,6 +46,7 @@ if ($result_lapangan->num_rows > 0) {
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            touch-action: auto;
         }
         
         /* Lapangan card hover effect */
@@ -93,6 +95,7 @@ if ($result_lapangan->num_rows > 0) {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             transition: all 0.3s ease-in-out;
             animation: float 3s ease-in-out infinite;
+            touch-action: auto;
         }
         
         .whatsapp-float:hover {
@@ -124,20 +127,39 @@ if ($result_lapangan->num_rows > 0) {
         /* Mobile Menu Sidebar Styling */
         #mobile-menu {
             box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+            touch-action: auto;
         }
 
         #mobile-menu.open {
             transform: translateX(0);
         }
 
+        #mobile-menu-overlay {
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            touch-action: auto;
+        }
+
         #mobile-menu-overlay.open {
             opacity: 0.5;
             visibility: visible;
+            pointer-events: auto;
         }
 
         /* Smooth scroll for anchor links */
         html {
             scroll-behavior: smooth;
+        }
+
+        /* Ensure body scrolling is never disabled permanently */
+        body {
+            overflow-y: auto;
+            touch-action: manipulation;
+        }
+
+        body.menu-open {
+            overflow: hidden;
         }
     </style>
 </head>
@@ -565,192 +587,9 @@ if ($result_lapangan->num_rows > 0) {
        title="Chat dengan kami di WhatsApp">
         <i class="fab fa-whatsapp"></i>
     </a>
-
-    <!-- JavaScript for Mobile Menu -->
-    <script>
-        // Get elements
-        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-        const closeMenuBtn = document.getElementById('close-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
-
-        if (mobileMenuBtn && closeMenuBtn && mobileMenu && mobileMenuOverlay) {
-            // Open menu
-            mobileMenuBtn.addEventListener('click', function() {
-                mobileMenu.classList.add('open');
-                mobileMenuOverlay.classList.add('open');
-                document.body.style.overflow = 'hidden';
-            });
-
-            // Close menu
-            closeMenuBtn.addEventListener('click', closeMobileMenu);
-            mobileMenuOverlay.addEventListener('click', closeMobileMenu);
-        }
-
-        // Close menu function
-        function closeMobileMenu() {
-            if (mobileMenu && mobileMenuOverlay) {
-                mobileMenu.classList.remove('open');
-                mobileMenuOverlay.classList.remove('open');
-                document.body.style.overflow = 'auto';
-            }
-        }
-
-        // Close menu when clicking on a link
-        document.querySelectorAll('#mobile-menu a').forEach(link => {
-            link.addEventListener('click', closeMobileMenu);
-        });
-
-        // Navbar scroll effect
-        const navbar = document.querySelector('nav');
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 100) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-
-        // Close menu when pressing Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' && mobileMenu && mobileMenu.classList.contains('open')) {
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-2">Isi Data Pemesan</h3>
-                    <p class="text-gray-600">Masukkan informasi pribadi Anda untuk konfirmasi booking</p>
-                </div>
-
-                <!-- Step 4 -->
-                <div class="text-center">
-                    <div class="bg-emerald-600 text-white rounded-full w-16 h-16 flex items-center justify-center text-3xl font-bold mx-auto mb-4">
-                        4
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-2">Konfirmasi</h3>
-                    <p class="text-gray-600">Selesai! Booking Anda sudah dikonfirmasi, siap bermain</p>
-                </div>
             </div>
         </div>
     </section>
-
-    <!-- SECTION KONTAK -->
-    <section id="kontak" class="py-16 md:py-24 bg-gradient-to-r from-emerald-600 to-emerald-800 text-white">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl md:text-5xl font-bold mb-4">
-                    Hubungi Kami
-                </h2>
-                <p class="text-lg text-emerald-100">
-                    Punya pertanyaan? Kami siap membantu Anda
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Phone -->
-                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-8 text-center">
-                    <i class="fas fa-phone text-5xl mb-4"></i>
-                    <h3 class="text-2xl font-bold mb-2">Telepon</h3>
-                    <p class="text-emerald-100">(+62) 812-3456-7890</p>
-                </div>
-
-                <!-- Email -->
-                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-8 text-center">
-                    <i class="fas fa-envelope text-5xl mb-4"></i>
-                    <h3 class="text-2xl font-bold mb-2">Email</h3>
-                    <p class="text-emerald-100">info@futsalbook.com</p>
-                </div>
-
-                <!-- Location -->
-                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-8 text-center">
-                    <i class="fas fa-map-marker-alt text-5xl mb-4"></i>
-                    <h3 class="text-2xl font-bold mb-2">Lokasi</h3>
-                    <p class="text-emerald-100">Jl. Stadion No. 123, Kota</p>
-                </div>
-            </div>
-
-            <!-- Contact Form -->
-            <div class="mt-12 max-w-2xl mx-auto bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-8">
-                <h3 class="text-2xl font-bold mb-6">Kirim Pesan Kami</h3>
-                <form class="space-y-4">
-                    <div>
-                        <input type="text" placeholder="Nama Anda" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-90 text-slate-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400">
-                    </div>
-                    <div>
-                        <input type="email" placeholder="Email Anda" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-90 text-slate-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400">
-                    </div>
-                    <div>
-                        <textarea placeholder="Pesan Anda" rows="4" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-90 text-slate-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"></textarea>
-                    </div>
-                    <button type="submit" class="w-full bg-yellow-400 text-slate-900 rounded-lg px-6 py-3 font-bold transition-all hover:bg-yellow-500">
-                        <i class="fas fa-paper-plane mr-2"></i> Kirim Pesan
-                    </button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="bg-slate-900 text-gray-300 py-12">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <!-- About -->
-                <div>
-                    <div class="flex items-center gap-2 mb-4">
-                        <i class="fas fa-futbol text-emerald-400 text-2xl"></i>
-                        <span class="text-2xl font-bold text-white">FutsalBook</span>
-                    </div>
-                    <p class="text-gray-400">Platform booking lapangan futsal online yang terpercaya dan mudah digunakan.</p>
-                </div>
-
-                <!-- Quick Links -->
-                <div>
-                    <h3 class="text-white font-bold text-lg mb-4">Menu</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#home" class="text-gray-400 hover:text-emerald-400 transition-all">Home</a></li>
-                        <li><a href="#lapangan" class="text-gray-400 hover:text-emerald-400 transition-all">Lapangan</a></li>
-                        <li><a href="#booking" class="text-gray-400 hover:text-emerald-400 transition-all">Booking</a></li>
-                        <li><a href="#kontak" class="text-gray-400 hover:text-emerald-400 transition-all">Kontak</a></li>
-                    </ul>
-                </div>
-
-                <!-- Help -->
-                <div>
-                    <h3 class="text-white font-bold text-lg mb-4">Bantuan</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-all">FAQ</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-all">Kebijakan Privasi</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-all">Syarat & Ketentuan</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-all">Hubungi Support</a></li>
-                    </ul>
-                </div>
-
-                <!-- Social Media -->
-                <div>
-                    <h3 class="text-white font-bold text-lg mb-4">Ikuti Kami</h3>
-                    <div class="flex gap-4">
-                        <a href="#" class="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-all">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-all">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-all">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center hover:bg-emerald-700 transition-all">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Divider -->
-            <hr class="border-gray-700 mb-6">
-
-            <!-- Copyright -->
-            <div class="text-center text-gray-400">
-                <p>&copy; 2026 FutsalBook. All Rights Reserved.</p>
-            </div>
-        </div>
-    </footer>
 
     <!-- Floating WhatsApp Button -->
     <a href="https://wa.me/6288983514206?text=Halo%20Admin%2C%20saya%20ingin%20menanyakan%20ketersediaan%20jadwal%20lapangan%20futsal.%20Mohon%20informasinya." 
