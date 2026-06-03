@@ -249,7 +249,7 @@ while ($row = $result_related->fetch_assoc()) {
                         ?>
                         <img id="mainImage" src="<?php echo htmlspecialchars($main_image ?? 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23e5e7eb%22 width=%22100%22 height=%22100%22/%3E%3C/svg%3E'); ?>" 
                              alt="<?php echo htmlspecialchars($lapangan['nama']); ?>" 
-                             class="w-full h-full object-cover" id="galleryImage">
+                             class="w-full h-full object-cover">
                         
                         <!-- Gallery Controls (only if there are multiple images) -->
                         <?php if (count($gallery) > 1): ?>
@@ -270,7 +270,7 @@ while ($row = $result_related->fetch_assoc()) {
                         <div class="flex gap-2 overflow-x-auto pb-2">
                             <!-- Main image thumbnail -->
                             <?php if ($lapangan['gambar']): ?>
-                                <button onclick="selectImage(-1)" class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-emerald-600 hover:border-emerald-700 transition-all">
+                                <button onclick="selectImage(0)" class="thumbnail-btn flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-emerald-600 hover:border-emerald-700 transition-all">
                                     <img src="<?php echo htmlspecialchars($lapangan['gambar']); ?>" 
                                          alt="Main" 
                                          class="w-full h-full object-cover">
@@ -279,7 +279,8 @@ while ($row = $result_related->fetch_assoc()) {
 
                             <!-- Gallery images thumbnails -->
                             <?php foreach ($gallery as $index => $item): ?>
-                                <button onclick="selectImage(<?php echo $index; ?>)" class="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-300 hover:border-emerald-600 transition-all">
+                                <?php $thumb_index = $lapangan['gambar'] ? $index + 1 : $index; ?>
+                                <button onclick="selectImage(<?php echo $thumb_index; ?>)" class="thumbnail-btn flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-300 hover:border-emerald-600 transition-all">
                                     <img src="<?php echo htmlspecialchars($item['foto']); ?>" 
                                          alt="Gallery <?php echo $index + 1; ?>" 
                                          class="w-full h-full object-cover">
@@ -553,10 +554,7 @@ while ($row = $result_related->fetch_assoc()) {
         let currentImageIndex = 0;
 
         function selectImage(index) {
-            currentImageIndex = index + 1; // +1 because main image is at index -1
-            if (index === -1) {
-                currentImageIndex = 0;
-            }
+            currentImageIndex = index;
             updateMainImage();
         }
 
@@ -573,7 +571,22 @@ while ($row = $result_related->fetch_assoc()) {
         function updateMainImage() {
             if (galleryImages.length > 0) {
                 document.getElementById('mainImage').src = galleryImages[currentImageIndex].src;
-                document.getElementById('imageCounter').textContent = currentImageIndex + 1;
+                const counter = document.getElementById('imageCounter');
+                if (counter) {
+                    counter.textContent = currentImageIndex + 1;
+                }
+                
+                // Update active thumbnail border
+                const thumbnails = document.querySelectorAll('.thumbnail-btn');
+                thumbnails.forEach((thumb, idx) => {
+                    if (idx === currentImageIndex) {
+                        thumb.classList.remove('border-gray-300');
+                        thumb.classList.add('border-emerald-600');
+                    } else {
+                        thumb.classList.remove('border-emerald-600');
+                        thumb.classList.add('border-gray-300');
+                    }
+                });
             }
         }
 
@@ -613,7 +626,7 @@ while ($row = $result_related->fetch_assoc()) {
 
         // Navbar scroll effect
         const navbar = document.querySelector('nav');
-        window.addEventListener('scroll', () => {
+        window.addEventListener('scroll', function() {
             if (window.scrollY > 100) {
                 navbar.classList.add('scrolled');
             } else {
@@ -623,7 +636,6 @@ while ($row = $result_related->fetch_assoc()) {
 
         function whatsappBooking() {
             const lapanganName = '<?php echo htmlspecialchars($lapangan['nama']); ?>';
-            const harga = '<?php echo htmlspecialchars($lapangan['harga']); ?>';
             const dateInput = document.getElementById('selectedDate').value;
             
             let message;
@@ -663,22 +675,26 @@ while ($row = $result_related->fetch_assoc()) {
         const mobileMenu = document.getElementById('mobile-menu');
         const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
 
-        // Open menu
-        mobileMenuBtn.addEventListener('click', function() {
-            mobileMenu.classList.add('open');
-            mobileMenuOverlay.classList.add('open');
-            document.body.style.overflow = 'hidden';
-        });
+        if (mobileMenuBtn && closeMenuBtn && mobileMenu && mobileMenuOverlay) {
+            // Open menu
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileMenu.classList.add('open');
+                mobileMenuOverlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            });
 
-        // Close menu
-        closeMenuBtn.addEventListener('click', closeMobileMenu);
-        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+            // Close menu
+            closeMenuBtn.addEventListener('click', closeMobileMenu);
+            mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+        }
 
         // Close menu function
         function closeMobileMenu() {
-            mobileMenu.classList.remove('open');
-            mobileMenuOverlay.classList.remove('open');
-            document.body.style.overflow = 'auto';
+            if (mobileMenu && mobileMenuOverlay) {
+                mobileMenu.classList.remove('open');
+                mobileMenuOverlay.classList.remove('open');
+                document.body.style.overflow = 'auto';
+            }
         }
 
         // Close menu when clicking on a link
@@ -686,27 +702,12 @@ while ($row = $result_related->fetch_assoc()) {
             link.addEventListener('click', closeMobileMenu);
         });
 
-        // Navbar scroll effect
-        const navbar = document.querySelector('nav');
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 100) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-
         // Close menu when pressing Escape key
         document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' && mobileMenu.classList.contains('open')) {
+            if (event.key === 'Escape' && mobileMenu && mobileMenu.classList.contains('open')) {
                 closeMobileMenu();
             }
         });
-    </script>
-</body>
-</html>direct ke booking checkout dengan parameter
-            window.location.href = `booking/checkout.php?lapangan_id=<?php echo $lapangan_id; ?>&tanggal=${selectedDate}&jam_mulai=09:00&jam_selesai=10:00`;
-        }
     </script>
 </body>
 </html>
