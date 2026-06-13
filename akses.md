@@ -1,2 +1,2 @@
-adminpanel: http://localhost/project-client-php/website_booking_system/2_website_booking_lapangan_futsal/admin/auth/login.php
+adminpanel: http://localhost/project-client-website-php/website_booking_system/2_website_booking_lapangan_futsal/admin/auth/login.php
 mainpage: http://localhost/project-client-php/website_booking_system/2_website_booking_lapangan_futsal/index.php
